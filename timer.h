@@ -3,5 +3,6 @@
 #include <sstream>
 #include <chrono>
 
-
-std::wstring CurrentTime();
+namespace Date {
+	std::wstring Curr();
+}

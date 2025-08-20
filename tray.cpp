@@ -4,8 +4,6 @@
 
 namespace Tray {
 
-	constexpr UINT TRAY_MENU_EXIT = 1001;
-	constexpr UINT TRAY_MENU_SETTING = 1002;
 
 	NOTIFYICONDATA nid;
 
@@ -16,6 +14,7 @@ namespace Tray {
 		nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
 		nid.uCallbackMessage = WM_ICON;
 		nid.hIcon = h_icon;
+
 		
 		wcscpy_s(nid.szTip, L"TIMER");
 

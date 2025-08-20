@@ -8,7 +8,6 @@
 #include "resource.h"
 
 
-
 constexpr UINT TIMER_ID = 1;
 constexpr TCHAR SZ_WINDOW_CLASS[] = L"TIMER";
 constexpr TCHAR SZ_TITLE[] = L"TIMER";
@@ -36,13 +35,19 @@ void RemoveTitleBar(HWND hWnd) {
 		SWP_FRAMECHANGED | SWP_NOACTIVATE);
 }
 
-BOOL IsPointInDragArea(HWND hwnd, POINT pt) {
+BOOL IsPointInArea(HWND hwnd, POINT pt) {
 	RECT rect;
 	GetClientRect(hwnd, &rect);
 
-	RECT drag_rect = rect;
+	RECT area_rect = rect;
 
-	return PtInRect(&drag_rect, pt);
+	return PtInRect(&area_rect, pt);
+}
+
+
+void Exit(HWND hwnd) {
+	KillTimer(hwnd, TIMER_ID);
+	PostQuitMessage(0);
 }
 
 LRESULT CALLBACK WndProc(
@@ -87,7 +92,7 @@ LRESULT CALLBACK WndProc(
 		//  Û±ÍŒª÷√
 		POINT pt = { LOWORD(lParam), HIWORD(lParam) };
 
-		if (IsPointInDragArea(hWnd, pt)) {
+		if (IsPointInArea(hWnd, pt)) {
 			drag_start = pt;
 			is_dragging = TRUE;
 
@@ -124,27 +129,33 @@ LRESULT CALLBACK WndProc(
 		}
 	}
 
-	case WM_SIZING: {
+	case WM_COMMAND: {
+		switch (LOWORD(wParam)) {
+			case Tray::TRAY_MENU_SETTING: {
+				break;
+			}
+
+			case Tray::TRAY_MENU_EXIT: {
+				Exit(hWnd);
+				break;
+			}
+		}
 	}
 
 	case WM_PAINT: {
 		hdc = BeginPaint(hWnd, &ps);
-		auto time_str = CurrentTime();
+		auto time_str = Date::Curr();
 
 		RECT rect;
 		GetClientRect(hWnd, &rect);
-
-		DrawScaledText(hdc, rect, time_str);
-
-		
+		Font::DrawScaledText(hdc, rect, time_str);
 
 		EndPaint(hWnd, &ps);
 		break;
 	}
 
 	case WM_DESTROY:
-		KillTimer(hWnd, TIMER_ID);
-		PostQuitMessage(0);
+		Exit(hWnd);
 		break;
 	default:
 		return DefWindowProc(hWnd, message, wParam, lParam);
@@ -152,6 +163,8 @@ LRESULT CALLBACK WndProc(
 
 	return 0;
 };
+
+
 
 int WINAPI WinMain(
 	_In_ HINSTANCE hInstance,

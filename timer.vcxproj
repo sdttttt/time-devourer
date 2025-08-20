@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="font.h" />
+    <ClInclude Include="gdi.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="tray.h" />

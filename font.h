@@ -3,4 +3,9 @@
 #include <windows.h>
 #include <string>
 
-void DrawScaledText(HDC hdc, const RECT& rect, const std::wstring& str);
+
+constexpr wchar_t FONT_FAMILY[] = L"Arial";
+
+namespace Font {
+	void DrawScaledText(HDC hdc, const RECT& rect, const std::wstring& str);
+}
