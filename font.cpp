@@ -8,7 +8,7 @@
 namespace Font {
 
 	namespace {
-		HFONT CreateScaledFont(HDC hdc, const RECT& rect, const std::wstring& str) {
+		HFONT CreateScaledFont(HDC hdc,_In_ const RECT& rect,_In_ const std::wstring& str) {
 			// 计算字体大小
 			int font_size_height = rect.bottom - rect.top;
 			int font_size_width = rect.right - rect.left;
@@ -34,9 +34,9 @@ namespace Font {
 		}
 	}
 
-	void DrawScaledText(HDC hdc, const RECT& rect, const std::wstring& str) {
+	void DrawScaledText(HDC hdc, _In_ const RECT& rect, _In_ const std::wstring& str) {
 		IGDI::AutoGDI<HFONT> h_font(CreateScaledFont(hdc, rect, str));
-		
+
 		HFONT h_old_font = (HFONT)SelectObject(hdc, h_font);
 
 		DrawText(

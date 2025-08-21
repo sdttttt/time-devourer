@@ -127,16 +127,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="date.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="time.cpp" />
     <ClCompile Include="tray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="font.h" />
     <ClInclude Include="gdi.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="timer.h" />
+    <ClInclude Include="date.h" />
     <ClInclude Include="tray.h" />
   </ItemGroup>
   <ItemGroup>

@@ -4,7 +4,6 @@
 
 namespace Tray {
 
-
 	NOTIFYICONDATA nid;
 
 	void AddIcon(HWND h_wnd, HICON h_icon) {

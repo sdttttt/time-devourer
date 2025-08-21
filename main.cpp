@@ -1,52 +1,27 @@
 #include <windows.h>
-#include <tchar.h>
-#include <stdlib.h>
-#include <sstream>
 #include "tray.h"
-#include "timer.h"
+#include "date.h"
 #include "font.h"
 #include "resource.h"
 
-
-constexpr UINT TIMER_ID = 1;
+// 时间的更新定时器
+constexpr UINT_PTR DATE_TIMER_ID = 0x0001;
+// 动画的更新定时器
+constexpr UINT_PTR ANIMATION_TIMER_ID = 0x0002;
+// 名称
 constexpr TCHAR SZ_WINDOW_CLASS[] = L"TIMER";
+// 标题栏名
 constexpr TCHAR SZ_TITLE[] = L"TIMER";
 
+// 窗口尺寸
 constexpr UINT WINDOW_WIDTH = 400;
 constexpr UINT WINDOW_HEIGHT = 100;
 
-HINSTANCE hInst;
-
-// 移除标题栏
-void RemoveTitleBar(HWND hWnd) {
-	// 移除标题栏相关样式
-	LONG style = GetWindowLong(hWnd, GWL_STYLE);
-	style &= ~(WS_CAPTION | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SYSMENU);
-	SetWindowLong(hWnd, GWL_STYLE, style);
-
-	// 移除扩展边框样式
-	LONG exStyle = GetWindowLong(hWnd, GWL_EXSTYLE);
-	exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-	SetWindowLong(hWnd, GWL_EXSTYLE, exStyle);
-
-	// 重绘窗口边框
-	SetWindowPos(hWnd, NULL, 0, 0, 0, 0,
-		SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER |
-		SWP_FRAMECHANGED | SWP_NOACTIVATE);
-}
-
-BOOL IsPointInArea(HWND hwnd, POINT pt) {
-	RECT rect;
-	GetClientRect(hwnd, &rect);
-
-	RECT area_rect = rect;
-
-	return PtInRect(&area_rect, pt);
-}
-
+// 窗口显示时间半径: 秒
+constexpr UINT WINDOWS_SHOW_TIME_RADIUS_SEC = 30;
 
 void Exit(HWND hwnd) {
-	KillTimer(hwnd, TIMER_ID);
+	KillTimer(hwnd, DATE_TIMER_ID);
 	PostQuitMessage(0);
 }
 
@@ -60,13 +35,21 @@ LRESULT CALLBACK WndProc(
 	PAINTSTRUCT ps;
 	HDC hdc;
 
+	// 窗口移动状态
 	static BOOL is_dragging = FALSE;
+	// 鼠标拖动位置起点
 	static POINT drag_start;
+
+	// 透明度
+	static int g_alpha = 255;
+	// 窗口动画标识
+	static BOOL g_fading = TRUE;
+	// 动画速度
+	constexpr int FADE_DURATION = 5;
 
 	switch (message)
 	{
 	case WM_CREATE: {
-		SetTimer(hWnd, TIMER_ID, 1000, NULL);
 		HICON h_icon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
 		Tray::AddIcon(hWnd, h_icon);
 		break;
@@ -84,18 +67,52 @@ LRESULT CALLBACK WndProc(
 	}
 
 	case WM_TIMER: {
-		if (wParam == TIMER_ID) InvalidateRect(hWnd, NULL, TRUE);
+		if (wParam == DATE_TIMER_ID)
+		{	
+			InvalidateRect(hWnd, NULL, TRUE);
+			
+		}
+
+		if (wParam == ANIMATION_TIMER_ID)
+		{
+			if (g_fading) {
+				g_alpha += FADE_DURATION;
+				if (g_alpha >= 255) {
+					g_alpha = 255;
+					g_fading = FALSE;
+					KillTimer(hWnd, ANIMATION_TIMER_ID);
+				}
+			}
+			else {
+				g_alpha -= FADE_DURATION;
+				if (g_alpha <= 0) {
+					g_alpha = 0;
+					g_fading = TRUE;
+					KillTimer(hWnd, ANIMATION_TIMER_ID);
+				}
+			}
+
+			SetLayeredWindowAttributes(hWnd, 0, g_alpha, LWA_ALPHA);
+		}
 		break;
 	}
 
+	// 鼠标按下
 	case WM_LBUTTONDOWN: {
 		// 鼠标位置
 		POINT pt = { LOWORD(lParam), HIWORD(lParam) };
 
-		if (IsPointInArea(hWnd, pt)) {
+		RECT rect;
+		// 获得窗口矩形
+		GetClientRect(hWnd, &rect);
+		RECT area_rect = rect;
+		
+		// 检查鼠标位置是否在窗口矩形内
+		if (PtInRect(&area_rect, pt)) {
 			drag_start = pt;
 			is_dragging = TRUE;
 
+			// 设置鼠标捕获以及修改鼠标样式
 			SetCapture(hWnd);
 			SetCursor(LoadCursor(NULL, IDC_SIZEALL));
 		}
@@ -144,7 +161,7 @@ LRESULT CALLBACK WndProc(
 
 	case WM_PAINT: {
 		hdc = BeginPaint(hWnd, &ps);
-		auto time_str = Date::Curr();
+		auto time_str = Date::CurrTimeWStr();
 
 		RECT rect;
 		GetClientRect(hWnd, &rect);
@@ -201,13 +218,12 @@ int WINAPI WinMain(
 		return 1;
 	}
 
-	hInst = hInstance;
 
 	HWND hWnd = CreateWindowEx(
-		WS_OVERLAPPED,
+		0,
 		SZ_WINDOW_CLASS,
 		SZ_TITLE,
-		WS_OVERLAPPEDWINDOW,
+		WS_POPUP | WSF_VISIBLE,
 		CW_USEDEFAULT, CW_USEDEFAULT,
 		WINDOW_WIDTH, WINDOW_HEIGHT,
 		NULL,
@@ -216,8 +232,8 @@ int WINAPI WinMain(
 		NULL
 	);
 
-	// 删除窗口的标题栏
-	RemoveTitleBar(hWnd);
+	// 设置启动时的不透明度
+	SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
 
 	// 圆角
 	HRGN h_rgn = CreateRoundRectRgn(
@@ -233,6 +249,8 @@ int WINAPI WinMain(
 		WINDOW_WIDTH, WINDOW_HEIGHT,
 		SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 
+	SetTimer(hWnd, DATE_TIMER_ID, 1000, NULL);
+
 	if (!hWnd)
 	{
 		MessageBox(NULL,
@@ -242,7 +260,6 @@ int WINAPI WinMain(
 
 		return 1;
 	}
-
 
 	ShowWindow(hWnd, nCmdShow);
 	UpdateWindow(hWnd);

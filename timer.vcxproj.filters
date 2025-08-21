@@ -18,18 +18,18 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="time.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="font.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="tray.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="date.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="timer.h">
+    <ClInclude Include="date.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="font.h">
