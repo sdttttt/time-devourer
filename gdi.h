@@ -15,10 +15,11 @@ namespace IGDI {
 		static_assert(is_gdi_type<T>::value, "T must be a GDI object");
 		T obj;
 	public:
-		AutoGDI(T obj) : obj(obj) {}
+		explicit AutoGDI(T obj) : obj(obj) {}
 		~AutoGDI() { 
 			if (obj) { 
 				DeleteObject(obj); 
+				obj = nullptr;
 			} 
 		}
 

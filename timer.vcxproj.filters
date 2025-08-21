@@ -27,6 +27,9 @@
     <ClCompile Include="date.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="proc.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="date.h">
@@ -42,6 +45,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="gdi.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="proc.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

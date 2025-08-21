@@ -7,7 +7,9 @@ namespace Date {
 
 	std::wstring CurrTimeWStr();
 
-	int CurrTimeHour();
-	int CurrTimeMin();
-	int CurrTimeSec();
+	std::chrono::hours CurrTimeHour();
+	std::chrono::minutes CurrTimeMin();
+	std::chrono::seconds CurrTimeSec();
+
+	std::chrono::seconds NextHourDistance();
 }

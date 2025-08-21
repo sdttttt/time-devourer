@@ -6,10 +6,10 @@
 namespace Date {
 
 	namespace {
-		struct tm CurrTM() {
-			auto now = std::chrono::system_clock::now();
-			auto now_t = std::chrono::system_clock::to_time_t(now);
-
+		inline struct tm CurrTM() {
+			const auto now = std::chrono::system_clock::now();
+			const auto now_t = std::chrono::system_clock::to_time_t(now);
+		
 			struct tm tm;
 			localtime_s(&tm, &now_t);
 			return tm;
@@ -17,26 +17,51 @@ namespace Date {
 	}
 
 	std::wstring CurrTimeWStr() {
-		auto tm = CurrTM();
+		const auto tm = CurrTM();
 
 		wchar_t buffer[80];
 		wcsftime(buffer, sizeof(buffer) / sizeof(wchar_t), L"%H:%M:%S", &tm);
 		return buffer;
 	}
 
-	int CurrTimeHour() {
+	
+
+	std::chrono::hours CurrTimeHour() {
 		auto tm = CurrTM();
 		
-		return tm.tm_hour;
+		return std::chrono::hours(tm.tm_hour);
 	}
 
-	int CurrTimeMin() {
+	std::chrono::minutes CurrTimeMin() {
 		auto tm = CurrTM();
-		return tm.tm_min;
+		return std::chrono::minutes(tm.tm_min);
 	}
 
-	int CurrTimeSec() {
+	std::chrono::seconds CurrTimeSec() {
 		auto tm = CurrTM();
-		return tm.tm_sec;
+		return std::chrono::seconds(tm.tm_sec);
+	}
+
+	// 和下一个整点的距离:秒
+	std::chrono::seconds NextHourDistance() {
+		struct tm tm = CurrTM();
+
+		const auto tmp_min = tm.tm_min;
+		const auto tmp_sec = tm.tm_sec;
+
+		tm.tm_min = 0;
+		tm.tm_sec = 0;
+		tm.tm_hour++;
+
+		const auto next_hour = std::chrono::system_clock::from_time_t(mktime(&tm));
+
+		tm.tm_hour--;
+		tm.tm_min = tmp_min;
+		tm.tm_sec = tmp_sec;
+
+
+		const auto now = std::chrono::system_clock::from_time_t(mktime(&tm));
+
+		return std::chrono::duration_cast<std::chrono::seconds>(next_hour - now);
 	}
 }
