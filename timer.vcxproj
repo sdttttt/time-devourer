@@ -130,13 +130,13 @@
     <ClCompile Include="date.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="proc.cpp" />
+    <ClCompile Include="time_proc.cpp" />
     <ClCompile Include="tray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="font.h" />
     <ClInclude Include="gdi.h" />
-    <ClInclude Include="proc.h" />
+    <ClInclude Include="time_proc.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="date.h" />
     <ClInclude Include="tray.h" />

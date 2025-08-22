@@ -4,49 +4,49 @@
 
 namespace Tray {
 
-	NOTIFYICONDATA nid;
+    NOTIFYICONDATA nid;
 
-	void AddIcon(HWND h_wnd, HICON h_icon) {
-		nid.cbSize = sizeof(NOTIFYICONDATA);
-		nid.hWnd = h_wnd;
-		nid.uID = ICON_ID;
-		nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
-		nid.uCallbackMessage = WM_ICON;
-		nid.hIcon = h_icon;
+    void AddIcon(HWND h_wnd, HICON h_icon) {
+        nid.cbSize = sizeof(NOTIFYICONDATA);
+        nid.hWnd = h_wnd;
+        nid.uID = ICON_ID;
+        nid.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
+        nid.uCallbackMessage = WM_ICON;
+        nid.hIcon = h_icon;
 
-		
-		wcscpy_s(nid.szTip, L"TIMER");
 
-		Shell_NotifyIcon(NIM_ADD, &nid);
-	}
+        wcscpy_s(nid.szTip, L"TIMER");
 
-	void RemoveIcon() {
-		Shell_NotifyIcon(NIM_DELETE, &nid);
-	}
+        Shell_NotifyIcon(NIM_ADD, &nid);
+    }
 
-	void ShowMenu(HWND hWnd) {
-		POINT pt;
-		GetCursorPos(&pt);
+    void RemoveIcon() {
+        Shell_NotifyIcon(NIM_DELETE, &nid);
+    }
 
-		// 创建弹出菜单
-		HMENU h_menu = CreatePopupMenu();
+    void ShowMenu(HWND hWnd) {
+        POINT pt;
+        GetCursorPos(&pt);
 
-		AppendMenu(h_menu, MF_STRING, TRAY_MENU_SETTING, L"Setting");
-		AppendMenu(h_menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
+        // 创建弹出菜单
+        HMENU h_menu = CreatePopupMenu();
 
-		// 激活前台窗口
-		SetForegroundWindow(hWnd);
+        AppendMenu(h_menu, MF_STRING, TRAY_MENU_SETTING, L"Setting");
+        AppendMenu(h_menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
 
-		TrackPopupMenu(
-			h_menu,
-			TPM_BOTTOMALIGN | TPM_LEFTALIGN | TPM_RIGHTBUTTON,
-			pt.x, pt.y,
-			0,
-			hWnd,
-			NULL);
+        // 激活前台窗口
+        SetForegroundWindow(hWnd);
 
-		DestroyMenu(h_menu);
-	}
+        TrackPopupMenu(
+            h_menu,
+            TPM_BOTTOMALIGN | TPM_LEFTALIGN | TPM_RIGHTBUTTON,
+            pt.x, pt.y,
+            0,
+            hWnd,
+            NULL);
+
+        DestroyMenu(h_menu);
+    }
 
 };
 

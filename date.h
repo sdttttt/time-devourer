@@ -5,11 +5,11 @@
 
 namespace Date {
 
-	std::wstring CurrTimeWStr();
+    std::wstring CurrTimeWStr();
 
-	std::chrono::hours CurrTimeHour();
-	std::chrono::minutes CurrTimeMin();
-	std::chrono::seconds CurrTimeSec();
+    std::chrono::hours CurrTimeHour();
+    std::chrono::minutes CurrTimeMin();
+    std::chrono::seconds CurrTimeSec();
 
-	std::chrono::seconds NextHourDistance();
+    std::chrono::seconds NextHourDistance();
 }
