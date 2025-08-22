@@ -1,0 +1,23 @@
+#pragma once
+
+#include <windows.h>
+
+// 时间显示窗口类
+constexpr TCHAR TIMER_WINDOW_CLASS[ ] = L"TimeWindowClass";
+
+// 标题栏名
+constexpr TCHAR TIMER_WINDOW_TITLE[ ] = L"Timer";
+
+// 窗口尺寸
+constexpr UINT TIMER_WINDOW_WIDTH = 400;
+constexpr UINT TIMER_WINDOW_HEIGHT = 100;
+
+// 时间的更新定时器
+constexpr UINT_PTR DATE_TIMER_ID = 0x0001;
+// 动画的更新定时器
+constexpr UINT_PTR ANIMATION_TIMER_ID = 0x0002;
+
+// 窗口显示时间半径: 秒
+constexpr UINT WINDOWS_SHOW_TIME_RADIUS_SEC = 30;
+
+int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);

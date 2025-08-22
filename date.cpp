@@ -6,7 +6,7 @@
 namespace Date {
 
     namespace {
-        inline struct tm CurrTM() {
+        inline struct tm currTM() {
             const auto now = std::chrono::system_clock::now();
             const auto now_t = std::chrono::system_clock::to_time_t(now);
 
@@ -17,7 +17,7 @@ namespace Date {
     }
 
     std::wstring CurrTimeWStr() {
-        const auto tm = CurrTM();
+        const auto tm = currTM();
 
         wchar_t buffer[ 80 ];
         wcsftime(buffer, sizeof(buffer) / sizeof(wchar_t), L"%H:%M:%S", &tm);
@@ -27,24 +27,24 @@ namespace Date {
 
 
     std::chrono::hours CurrTimeHour() {
-        auto tm = CurrTM();
+        auto tm = currTM();
 
         return std::chrono::hours(tm.tm_hour);
     }
 
     std::chrono::minutes CurrTimeMin() {
-        auto tm = CurrTM();
+        auto tm = currTM();
         return std::chrono::minutes(tm.tm_min);
     }
 
     std::chrono::seconds CurrTimeSec() {
-        auto tm = CurrTM();
+        auto tm = currTM();
         return std::chrono::seconds(tm.tm_sec);
     }
 
     // 和下一个整点的距离:秒
     std::chrono::seconds NextHourDistance() {
-        struct tm tm = CurrTM();
+        struct tm tm = currTM();
 
         const auto tmp_min = tm.tm_min;
         const auto tmp_sec = tm.tm_sec;

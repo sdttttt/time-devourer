@@ -4,16 +4,18 @@
 #include "font.h"
 #include "resource.h"
 
-#include "time_proc.h"
+#include "time_window.h"
+#include "setting_window.h"
 
+static HINSTANCE g_hInstance;
 
-void Exit(HWND hwnd) {
+static void Exit(HWND hwnd) {
     KillTimer(hwnd, DATE_TIMER_ID);
     KillTimer(hwnd, ANIMATION_TIMER_ID);
     PostQuitMessage(0);
 }
 
-LRESULT CALLBACK WndProc(
+LRESULT CALLBACK timeWndProc(
     _In_ HWND hWnd,
     _In_ UINT message,
     _In_ WPARAM wParam,
@@ -71,7 +73,6 @@ LRESULT CALLBACK WndProc(
                     is_show = TRUE;
                     g_fading = TRUE;
                 }
-
             }
             else {
                 if ( is_show ) {
@@ -80,6 +81,8 @@ LRESULT CALLBACK WndProc(
                     g_fading = TRUE;
                 }
             }
+
+            InvalidateRect(hWnd, NULL, FALSE);
         }
 
         if ( wParam == ANIMATION_TIMER_ID )
@@ -106,7 +109,7 @@ LRESULT CALLBACK WndProc(
         break;
     }
 
-                 // 鼠标按下
+    // 鼠标按下
     case WM_LBUTTONDOWN: {
         // 鼠标位置
         POINT pt = { LOWORD(lParam), HIWORD(lParam) };
@@ -158,6 +161,7 @@ LRESULT CALLBACK WndProc(
     case WM_COMMAND: {
         switch ( LOWORD(wParam) ) {
         case Tray::TRAY_MENU_SETTING: {
+            CreateSettingClassAndWindow(g_hInstance, SW_SHOWNORMAL);
             break;
         }
 
@@ -189,3 +193,88 @@ LRESULT CALLBACK WndProc(
 
     return 0;
 };
+
+
+
+/// <summary>
+/// 创建一个定时器窗口类并显示窗口，设置窗口样式、圆角和定时器。
+/// </summary>
+/// <param name="hInstance">应用程序实例句柄。</param>
+/// <param name="nCmdShow">窗口显示方式。</param>
+/// <returns>如果成功则返回0，如果失败则返回1。</returns>
+int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
+    WNDCLASSEX time_wcex;
+
+    g_hInstance = hInstance;
+
+    time_wcex.cbSize = sizeof(WNDCLASSEX);
+    time_wcex.style = CS_HREDRAW | CS_VREDRAW;
+    time_wcex.lpfnWndProc = timeWndProc;
+    time_wcex.cbClsExtra = 0;
+    time_wcex.cbWndExtra = 0;
+    time_wcex.hInstance = hInstance;
+    time_wcex.hIcon = LoadIcon(time_wcex.hInstance, IDI_APPLICATION);
+    time_wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
+    time_wcex.hbrBackground = ( HBRUSH ) ( COLOR_WINDOW + 1 );
+    time_wcex.lpszMenuName = NULL;
+    time_wcex.lpszClassName = TIMER_WINDOW_CLASS;
+    time_wcex.hIconSm = LoadIcon(time_wcex.hInstance, IDI_APPLICATION);
+
+
+    if ( !RegisterClassEx(&time_wcex) )
+    {
+        MessageBox(NULL,
+            L"RegisterClass failed!",
+            L"ERROR",
+            NULL);
+
+        return 1;
+    }
+
+    HWND time_hwnd = CreateWindowEx(
+        WS_EX_LAYERED | WS_EX_TOOLWINDOW,
+        TIMER_WINDOW_CLASS,
+        TIMER_WINDOW_TITLE,
+        WS_POPUP | WSF_VISIBLE,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        TIMER_WINDOW_WIDTH, TIMER_WINDOW_HEIGHT,
+        NULL,
+        NULL,
+        hInstance,
+        NULL
+    );
+
+    // 设置启动时的不透明度
+    SetLayeredWindowAttributes(time_hwnd, 0, 0, LWA_ALPHA);
+
+    // 圆角
+    HRGN h_rgn = CreateRoundRectRgn(
+        0, 0,
+        TIMER_WINDOW_WIDTH, TIMER_WINDOW_HEIGHT,
+        10, 10);
+
+    SetWindowRgn(time_hwnd, h_rgn, TRUE);
+
+    SetWindowPos(
+        time_hwnd, NULL,
+        10, 10,
+        TIMER_WINDOW_WIDTH, TIMER_WINDOW_HEIGHT,
+        SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+
+    SetTimer(time_hwnd, DATE_TIMER_ID, 1000, NULL);
+
+    if ( !time_hwnd )
+    {
+        MessageBox(NULL,
+            L"Call to CreateWindowEx failed!",
+            L"ERROR",
+            NULL);
+
+        return 1;
+    }
+
+    ShowWindow(time_hwnd, nCmdShow);
+    UpdateWindow(time_hwnd);
+
+    return 0;
+}

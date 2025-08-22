@@ -104,6 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -130,13 +131,15 @@
     <ClCompile Include="date.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="time_proc.cpp" />
+    <ClCompile Include="setting_window.cpp" />
+    <ClCompile Include="time_window.cpp" />
     <ClCompile Include="tray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="font.h" />
     <ClInclude Include="gdi.h" />
-    <ClInclude Include="time_proc.h" />
+    <ClInclude Include="setting_window.h" />
+    <ClInclude Include="time_window.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="date.h" />
     <ClInclude Include="tray.h" />

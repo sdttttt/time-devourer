@@ -5,17 +5,18 @@
 // 自动包装GDI对象，在对象生命周期结束时自动释放
 namespace IGDI {
 
-    template <typename T>
+    template <typename GDIObj>
     struct is_gdi_type : std::false_type {};
-    template <> struct is_gdi_type<HFONT> : std::true_type {};
+    template <>
+    struct is_gdi_type<HFONT> : std::true_type {};
 
-    template <typename T>
+    template <typename GDIObj>
     class AutoGDI {
 
-        static_assert( is_gdi_type<T>::value, "T must be a GDI object" );
-        T obj;
+        static_assert( is_gdi_type<GDIObj>::value, "T must be a GDI object" );
+        GDIObj obj;
     public:
-        explicit AutoGDI(T obj) : obj(obj) {}
+        explicit AutoGDI(GDIObj obj) : obj(obj) {}
         ~AutoGDI() {
             if ( obj ) {
                 DeleteObject(obj);
@@ -23,12 +24,12 @@ namespace IGDI {
             }
         }
 
-        operator T() const { return obj; }
+        operator GDIObj() const { return obj; }
 
-        T get() const { return obj; }
+        GDIObj get() const { return obj; }
 
-        T release() {
-            T tmp = obj;
+        GDIObj release() {
+            GDIObj tmp = obj;
             obj = nullptr;
             return tmp;
         }

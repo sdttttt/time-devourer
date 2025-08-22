@@ -14,7 +14,6 @@ namespace Tray {
         nid.uCallbackMessage = WM_ICON;
         nid.hIcon = h_icon;
 
-
         wcscpy_s(nid.szTip, L"TIMER");
 
         Shell_NotifyIcon(NIM_ADD, &nid);

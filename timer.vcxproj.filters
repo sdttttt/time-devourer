@@ -27,7 +27,10 @@
     <ClCompile Include="date.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="time_proc.cpp">
+    <ClCompile Include="setting_window.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="time_window.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +50,10 @@
     <ClInclude Include="gdi.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="time_proc.h">
+    <ClInclude Include="time_window.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="setting_window.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
