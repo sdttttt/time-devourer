@@ -42,6 +42,20 @@ namespace Date {
         return std::chrono::seconds(tm.tm_sec);
     }
 
+#ifdef _DEBUG
+    std::chrono::seconds NextHourDistance() {
+        struct tm tm = currTM();
+
+        const auto now = std::chrono::system_clock::from_time_t(mktime(&tm));
+
+        tm.tm_min+= 2;
+        tm.tm_sec = 0;
+
+        const auto next_hour = std::chrono::system_clock::from_time_t(mktime(&tm));
+
+        return std::chrono::duration_cast< std::chrono::seconds >( next_hour - now );
+    }
+#else
     // 和下一个整点的距离:秒
     std::chrono::seconds NextHourDistance() {
         struct tm tm = currTM();
@@ -52,16 +66,10 @@ namespace Date {
         tm.tm_min = 0;
         tm.tm_sec = 0;
 
-#ifdef _DEBUG
-        // TODO: 调试时修改这里
-        tm.tm_min = 53;
-        tm.tm_sec = 0;
-        tm.tm_hour--;
-#endif
-
-
         const auto next_hour = std::chrono::system_clock::from_time_t(mktime(&tm));
 
         return std::chrono::duration_cast< std::chrono::seconds >( next_hour - now );
     }
+#endif
+
 }

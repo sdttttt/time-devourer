@@ -134,6 +134,7 @@ LRESULT CALLBACK timeWndProc(
             ShowWindow(hWnd, SW_SHOW);
             SetForegroundWindow(hWnd);
         }
+        break;
     }
 
     case WM_TIMER: {
