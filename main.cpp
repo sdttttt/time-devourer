@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <VersionHelpers.h>
 #include "time_window.h"
 #include "setting_window.h"
 
@@ -9,7 +10,9 @@ int WINAPI WinMain(
     _In_ LPSTR lpCmdLine,
     _In_ int nCmdShow
 ) {
-    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    if ( IsWindows10OrGreater() ) {
+        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    }
 
     auto ret = CreateTimeClassAndWindow(hInstance, nCmdShow);
     if ( ret > 0 ) {
