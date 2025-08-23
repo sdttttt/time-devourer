@@ -12,7 +12,7 @@ using namespace std::chrono;
 
 struct WindowPos {
     BOOL is_dragging = FALSE; // 窗口移动状态
-    POINT drag_start; // 鼠标拖动位置起点
+    POINT drag_start = { 0, 0 }; // 鼠标拖动位置起点
 };
 
 struct WindowDisplay {
@@ -22,60 +22,25 @@ struct WindowDisplay {
 };
 
 
-// 计步器: 并非时间倒计时，由手动调用step步进来计数
-// 需要设置起点和目标点，更具distance来计算和目标点的距离
-// 抵达目标点后不会停止，可以继续调用step来继续步进
-class StepCountDown {
-
-public:
-    StepCountDown(UINT down, UINT count = 0) : count(count), down(down) {}
-    StepCountDown(seconds down, seconds count = seconds(0)) : count(count.count()), down(down.count()) {}
-
-    StepCountDown() : StepCountDown(0, 0) {};
-
-    void step(UINT i = 1) {
-        this->count += i;
-    }
-
-    UINT distance() const {
-        return abs(static_cast<int>(this->down - this->count));
-    }
-
-    void reset(UINT end, UINT start = 0) {
-        this->count = start;
-        this->down = end;
-    }
-
-    void reset(seconds end, UINT start = 0) {
-        this->count = start;
-        this->down = end.count();
-    }
-
-private:
-
-    UINT count;
-    UINT down;
-};
- 
 static void Exit(HWND hwnd) {
     KillTimer(hwnd, DATE_TIMER_ID);
     KillTimer(hwnd, ANIMATION_TIMER_ID);
     PostQuitMessage(0);
 }
 
-static void TimerWindowFadeIn(HWND hwnd, WindowDisplay& wd) {
+static void timerWindowFadeIn(HWND hwnd, WindowDisplay& wd) {
     wd.is_show = TRUE;
     wd.fading = TRUE;
     SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // 启动新定时器
 }
 
-static void TimerWindowFadeOut(HWND hwnd, WindowDisplay& wd) {
+static void timerWindowFadeOut(HWND hwnd, WindowDisplay& wd) {
     wd.is_show = FALSE;
     wd.fading = TRUE;
     SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // 启动新定时器
 }
 
-static void UpdateTimerWindowFadeAnimation(HWND hwnd, WindowDisplay& wd) {
+static void updateTimerWindowFadeAnimation(HWND hwnd, WindowDisplay& wd) {
     // 提醒窗口开始动画
     if ( wd.fading && wd.is_show ) {
         wd.alpha += FADE_DURATION;
@@ -100,7 +65,7 @@ static void UpdateTimerWindowFadeAnimation(HWND hwnd, WindowDisplay& wd) {
     SetLayeredWindowAttributes(hwnd, 0, wd.alpha, LWA_ALPHA);
 }
 
-LRESULT CALLBACK timeWndProc(
+static LRESULT CALLBACK timeWndProc(
     _In_ HWND hWnd,
     _In_ UINT message,
     _In_ WPARAM wParam,
@@ -130,9 +95,9 @@ LRESULT CALLBACK timeWndProc(
             Tray::ShowMenu(hWnd);
         }
 
-        if ( lParam == WM_LBUTTONDBLCLK ) {
-            ShowWindow(hWnd, SW_SHOW);
-            SetForegroundWindow(hWnd);
+        if ( lParam == WM_LBUTTONUP ) {
+            g_window_display.alpha = 255;
+            timerWindowFadeOut(hWnd, g_window_display);
         }
         break;
     }
@@ -145,13 +110,13 @@ LRESULT CALLBACK timeWndProc(
             // 如果距离已经在提醒半径内且提醒未激活：则可以开始提醒
             if ( g_step_down.distance() <= WINDOWS_SHOW_TIME_RADIUS_SEC && FALSE == g_window_display.is_show  )
             {
-                TimerWindowFadeIn(hWnd, g_window_display);
+                timerWindowFadeIn(hWnd, g_window_display);
             }
 
             // 如果提醒激活，且距离已经超出提醒半径：则停止提醒，重置距离计算
             if ( g_step_down.distance() > WINDOWS_SHOW_TIME_RADIUS_SEC && g_window_display.is_show )
             {
-                TimerWindowFadeOut(hWnd, g_window_display);
+                timerWindowFadeOut(hWnd, g_window_display);
                 // 重新计算下一次时间
                 g_step_down.reset(Date::NextHourDistance());
              }
@@ -161,7 +126,7 @@ LRESULT CALLBACK timeWndProc(
 
         if ( wParam == ANIMATION_TIMER_ID )
         {
-            UpdateTimerWindowFadeAnimation(hWnd, g_window_display);
+            updateTimerWindowFadeAnimation(hWnd, g_window_display);
         }
         break;
     }
@@ -304,15 +269,15 @@ int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
 
     // 圆角
     HRGN h_rgn = CreateRoundRectRgn(
-        0, 0,
+        TIMER_WINDOW_X, TIMER_WINDOW_Y,
         TIMER_WINDOW_WIDTH, TIMER_WINDOW_HEIGHT,
-        10, 10);
+        TIMER_WINDOW_ROUND_W, TIMER_WINDOW_ROUND_H);
 
     SetWindowRgn(time_hwnd, h_rgn, TRUE);
-
+    
     SetWindowPos(
         time_hwnd, NULL,
-        10, 10,
+        TIMER_WINDOW_X, TIMER_WINDOW_Y,
         TIMER_WINDOW_WIDTH, TIMER_WINDOW_HEIGHT,
         SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
 
