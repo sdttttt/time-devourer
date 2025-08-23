@@ -48,9 +48,17 @@ namespace Date {
 
         const auto now = std::chrono::system_clock::from_time_t(mktime(&tm));
 
-        tm.tm_min = 33;
+        tm.tm_hour++;
+        tm.tm_min = 0;
         tm.tm_sec = 0;
-        tm.tm_hour;
+
+#ifdef _DEBUG
+        // TODO: 调试时修改这里
+        tm.tm_min = 53;
+        tm.tm_sec = 0;
+        tm.tm_hour--;
+#endif
+
 
         const auto next_hour = std::chrono::system_clock::from_time_t(mktime(&tm));
 

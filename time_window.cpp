@@ -17,7 +17,7 @@ struct WindowPos {
 
 struct WindowDisplay {
     BOOL is_show = FALSE;  // 窗口是否显示
-    int alpha = 0; // 透明度
+    UINT alpha = 0; // 透明度
     BOOL fading = FALSE; // 窗口动画标识, 为TRUE时窗口正在进行(消失|进入)动画
 };
 
@@ -28,33 +28,33 @@ struct WindowDisplay {
 class StepCountDown {
 
 public:
-    StepCountDown(unsigned int down, unsigned int count = 0) : count(count), down(down) {}
+    StepCountDown(UINT down, UINT count = 0) : count(count), down(down) {}
     StepCountDown(seconds down, seconds count = seconds(0)) : count(count.count()), down(down.count()) {}
 
     StepCountDown() : StepCountDown(0, 0) {};
 
-    void step(unsigned int i = 1) {
+    void step(UINT i = 1) {
         this->count += i;
     }
 
-    unsigned int distance() const {
+    UINT distance() const {
         return abs(static_cast<int>(this->down - this->count));
     }
 
-    void reset(unsigned int end, unsigned int start = 0) {
+    void reset(UINT end, UINT start = 0) {
         this->count = start;
         this->down = end;
     }
 
-    void reset(seconds end, unsigned int start = 0) {
+    void reset(seconds end, UINT start = 0) {
         this->count = start;
         this->down = end.count();
     }
 
 private:
 
-    unsigned int count;
-    unsigned int down;
+    UINT count;
+    UINT down;
 };
  
 static void Exit(HWND hwnd) {
@@ -285,7 +285,7 @@ int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
     }
 
     HWND time_hwnd = CreateWindowEx(
-        WS_EX_LAYERED | WS_EX_TOOLWINDOW,
+        WS_EX_LAYERED | WS_EX_TOOLWINDOW | WS_EX_TOPMOST,
         TIMER_CLASS_NAME,
         TIMER_WINDOW_TITLE,
         WS_POPUP | WSF_VISIBLE,
