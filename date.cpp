@@ -46,21 +46,13 @@ namespace Date {
     std::chrono::seconds NextHourDistance() {
         struct tm tm = currTM();
 
-        const auto tmp_min = tm.tm_min;
-        const auto tmp_sec = tm.tm_sec;
+        const auto now = std::chrono::system_clock::from_time_t(mktime(&tm));
 
-        tm.tm_min = 0;
+        tm.tm_min = 33;
         tm.tm_sec = 0;
-        tm.tm_hour++;
+        tm.tm_hour;
 
         const auto next_hour = std::chrono::system_clock::from_time_t(mktime(&tm));
-
-        tm.tm_hour--;
-        tm.tm_min = tmp_min;
-        tm.tm_sec = tmp_sec;
-
-
-        const auto now = std::chrono::system_clock::from_time_t(mktime(&tm));
 
         return std::chrono::duration_cast< std::chrono::seconds >( next_hour - now );
     }

@@ -8,11 +8,96 @@
 #include "setting_window.h"
 #include "common.h"
 
+using namespace std::chrono;
 
+struct WindowPos {
+    BOOL is_dragging = FALSE; // 窗口移动状态
+    POINT drag_start; // 鼠标拖动位置起点
+};
+
+struct WindowDisplay {
+    BOOL is_show = FALSE;  // 窗口是否显示
+    int alpha = 0; // 透明度
+    BOOL fading = FALSE; // 窗口动画标识, 为TRUE时窗口正在进行(消失|进入)动画
+};
+
+
+// 计步器: 并非时间倒计时，由手动调用step步进来计数
+// 需要设置起点和目标点，更具distance来计算和目标点的距离
+// 抵达目标点后不会停止，可以继续调用step来继续步进
+class StepCountDown {
+
+public:
+    StepCountDown(unsigned int down, unsigned int count = 0) : count(count), down(down) {}
+    StepCountDown(seconds down, seconds count = seconds(0)) : count(count.count()), down(down.count()) {}
+
+    StepCountDown() : StepCountDown(0, 0) {};
+
+    void step(unsigned int i = 1) {
+        this->count += i;
+    }
+
+    unsigned int distance() const {
+        return abs(static_cast<int>(this->down - this->count));
+    }
+
+    void reset(unsigned int end, unsigned int start = 0) {
+        this->count = start;
+        this->down = end;
+    }
+
+    void reset(seconds end, unsigned int start = 0) {
+        this->count = start;
+        this->down = end.count();
+    }
+
+private:
+
+    unsigned int count;
+    unsigned int down;
+};
+ 
 static void Exit(HWND hwnd) {
     KillTimer(hwnd, DATE_TIMER_ID);
     KillTimer(hwnd, ANIMATION_TIMER_ID);
     PostQuitMessage(0);
+}
+
+static void TimerWindowFadeIn(HWND hwnd, WindowDisplay& wd) {
+    wd.is_show = TRUE;
+    wd.fading = TRUE;
+    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // 启动新定时器
+}
+
+static void TimerWindowFadeOut(HWND hwnd, WindowDisplay& wd) {
+    wd.is_show = FALSE;
+    wd.fading = TRUE;
+    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // 启动新定时器
+}
+
+static void UpdateTimerWindowFadeAnimation(HWND hwnd, WindowDisplay& wd) {
+    // 提醒窗口开始动画
+    if ( wd.fading && wd.is_show ) {
+        wd.alpha += FADE_DURATION;
+        if ( wd.alpha >= 255 ) {
+            wd.alpha = 255;
+            wd.fading = FALSE;
+            // 动画结束关闭动画定时器
+            KillTimer(hwnd, ANIMATION_TIMER_ID);
+        }
+    }
+
+    // 提醒窗口结束动画
+    if ( wd.fading && FALSE == wd.is_show ) {
+        wd.alpha -= FADE_DURATION;
+        if ( wd.alpha <= 0 ) {
+            wd.alpha = 0;
+            wd.fading = TRUE;
+            KillTimer(hwnd, ANIMATION_TIMER_ID);
+        }
+    }
+
+    SetLayeredWindowAttributes(hwnd, 0, wd.alpha, LWA_ALPHA);
 }
 
 LRESULT CALLBACK timeWndProc(
@@ -25,21 +110,14 @@ LRESULT CALLBACK timeWndProc(
     PAINTSTRUCT ps;
     HDC hdc;
 
-    // 窗口是否显示
-    static BOOL is_show = FALSE;
-
-    // 窗口移动状态
-    static BOOL is_dragging = FALSE;
-    // 鼠标拖动位置起点
-    static POINT drag_start;
-
-    // 透明度
-    static int g_alpha = 255;
-    // 窗口动画标识, 为TRUE时窗口正在进行(消失|进入)动画
-    static BOOL g_fading = FALSE;
-    // 动画速度
-    constexpr int FADE_DURATION = 5;
-
+    // 窗口位置状态
+    static WindowPos g_window_pos;
+    // 窗口显示状态
+    static WindowDisplay g_window_display;
+    
+    // 计步器
+    static StepCountDown g_step_down(Date::NextHourDistance());
+    
     switch ( message )
     {
     case WM_CREATE: {
@@ -60,50 +138,29 @@ LRESULT CALLBACK timeWndProc(
 
     case WM_TIMER: {
         if ( wParam == DATE_TIMER_ID )
-        {
-            auto next_hour_sec = Date::NextHourDistance();
-            auto max = max(next_hour_sec, std::chrono::seconds(WINDOWS_SHOW_TIME_RADIUS_SEC));
-            auto min = min(next_hour_sec, std::chrono::seconds(WINDOWS_SHOW_TIME_RADIUS_SEC));
-            auto distance = max - min;
-            if ( distance < std::chrono::seconds(WINDOWS_SHOW_TIME_RADIUS_SEC) )
+        {   
+            g_step_down.step();
+
+            // 如果距离已经在提醒半径内且提醒未激活：则可以开始提醒
+            if ( g_step_down.distance() <= WINDOWS_SHOW_TIME_RADIUS_SEC && FALSE == g_window_display.is_show  )
             {
-                if ( is_show == FALSE ) {
-                    SetTimer(hWnd, ANIMATION_TIMER_ID, 50, NULL);
-                    is_show = TRUE;
-                    g_fading = TRUE;
-                }
+                TimerWindowFadeIn(hWnd, g_window_display);
             }
-            else {
-                if ( is_show ) {
-                    SetTimer(hWnd, ANIMATION_TIMER_ID, 50, NULL);
-                    is_show = FALSE;
-                    g_fading = TRUE;
-                }
-            }
+
+            // 如果提醒激活，且距离已经超出提醒半径：则停止提醒，重置距离计算
+            if ( g_step_down.distance() > WINDOWS_SHOW_TIME_RADIUS_SEC && g_window_display.is_show )
+            {
+                TimerWindowFadeOut(hWnd, g_window_display);
+                // 重新计算下一次时间
+                g_step_down.reset(Date::NextHourDistance());
+             }
 
             InvalidateRect(hWnd, NULL, FALSE);
         }
 
         if ( wParam == ANIMATION_TIMER_ID )
         {
-            if ( g_fading && is_show ) {
-                g_alpha += FADE_DURATION;
-                if ( g_alpha >= 255 ) {
-                    g_alpha = 255;
-                    g_fading = FALSE;
-                    KillTimer(hWnd, ANIMATION_TIMER_ID);
-                }
-            }
-            if ( g_fading && is_show == FALSE ) {
-                g_alpha -= FADE_DURATION;
-                if ( g_alpha <= 0 ) {
-                    g_alpha = 0;
-                    g_fading = TRUE;
-                    KillTimer(hWnd, ANIMATION_TIMER_ID);
-                }
-            }
-
-            SetLayeredWindowAttributes(hWnd, 0, g_alpha, LWA_ALPHA);
+            UpdateTimerWindowFadeAnimation(hWnd, g_window_display);
         }
         break;
     }
@@ -120,8 +177,8 @@ LRESULT CALLBACK timeWndProc(
 
         // 检查鼠标位置是否在窗口矩形内
         if ( PtInRect(&area_rect, pt) ) {
-            drag_start = pt;
-            is_dragging = TRUE;
+            g_window_pos.drag_start = pt;
+            g_window_pos.is_dragging = TRUE;
 
             // 设置鼠标捕获以及修改鼠标样式
             SetCapture(hWnd);
@@ -132,8 +189,8 @@ LRESULT CALLBACK timeWndProc(
     }
 
     case WM_LBUTTONUP: {
-        if ( is_dragging ) {
-            is_dragging = FALSE;
+        if ( g_window_pos.is_dragging ) {
+            g_window_pos.is_dragging = FALSE;
             ReleaseCapture();
         }
 
@@ -141,15 +198,15 @@ LRESULT CALLBACK timeWndProc(
     }
 
     case WM_MOUSEMOVE: {
-        if ( is_dragging ) {
+        if ( g_window_pos.is_dragging ) {
             POINT pt;
             GetCursorPos(&pt);
 
             RECT rect;
             GetWindowRect(hWnd, &rect);
 
-            int new_x = rect.left + ( pt.x - ( rect.left + drag_start.x ) );
-            int new_y = rect.top + ( pt.y - ( rect.top + drag_start.y ) );
+            int new_x = rect.left + ( pt.x - ( rect.left + g_window_pos.drag_start.x ) );
+            int new_y = rect.top + ( pt.y - ( rect.top + g_window_pos.drag_start.y ) );
 
             // 移动窗口
             SetWindowPos(hWnd, NULL, new_x, new_y, 0, 0,
