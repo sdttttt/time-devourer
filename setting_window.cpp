@@ -4,7 +4,7 @@
 #include "common.h"
 
 
-LRESULT CALLBACK settingWndProc(
+static LRESULT CALLBACK settingWndProc(
     _In_ HWND hWnd,
     _In_ UINT message,
     _In_ WPARAM wParam,
@@ -22,21 +22,24 @@ LRESULT CALLBACK settingWndProc(
         break;
     }
 
-    case WM_DESTROY: {
+    case WM_CLOSE: {
         DestroyWindow(hWnd);
+        break;
+    }
+
+    case WM_DESTROY: {
         break;
     }
 
     default:
         return DefWindowProc(hWnd, message, wParam, lParam);
-        break;
     }
 
     return 0;
 }
 
 
-void registerSettingClass(_In_ HINSTANCE hInstance) {
+static void registerSettingClass(_In_ HINSTANCE hInstance) {
     WNDCLASSEX setting_wcex;
 
     setting_wcex.cbSize = sizeof(WNDCLASSEX);
@@ -45,12 +48,12 @@ void registerSettingClass(_In_ HINSTANCE hInstance) {
     setting_wcex.cbClsExtra = 0;
     setting_wcex.cbWndExtra = 0;
     setting_wcex.hInstance = hInstance;
-    setting_wcex.hIcon = LoadIcon(setting_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    setting_wcex.hIcon = LoadIcon(setting_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON));
     setting_wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
     setting_wcex.hbrBackground = ( HBRUSH ) ( COLOR_WINDOW + 1 );
     setting_wcex.lpszMenuName = NULL;
     setting_wcex.lpszClassName = SETTING_CLASS_NAME;
-    setting_wcex.hIconSm = LoadIcon(setting_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    setting_wcex.hIconSm = LoadIcon(setting_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON));
 
 
     RegisterClassEx(&setting_wcex);

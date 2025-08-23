@@ -9,7 +9,7 @@ namespace Tray {
 
     void AddIcon(HWND h_wnd) {
 
-        HICON h_icon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+        HICON h_icon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
 
         nid.cbSize = sizeof(NOTIFYICONDATA);
         nid.hWnd = h_wnd;

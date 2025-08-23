@@ -206,6 +206,10 @@ static LRESULT CALLBACK timeWndProc(
         EndPaint(hWnd, &ps);
         break;
     }
+    case WM_CLOSE: {
+        DestroyWindow(hWnd);
+        break;
+    }
 
     case WM_DESTROY:
         Exit(hWnd);
@@ -226,12 +230,12 @@ void registerTimeClass(_In_ HINSTANCE hInstance) {
     time_wcex.cbClsExtra = 0;
     time_wcex.cbWndExtra = 0;
     time_wcex.hInstance = hInstance;
-    time_wcex.hIcon = LoadIcon(time_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    time_wcex.hIcon = LoadIcon(time_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON));
     time_wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
     time_wcex.hbrBackground = ( HBRUSH ) ( COLOR_WINDOW + 1 );
     time_wcex.lpszMenuName = NULL;
     time_wcex.lpszClassName = TIMER_CLASS_NAME;
-    time_wcex.hIconSm = LoadIcon(time_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON1));
+    time_wcex.hIconSm = LoadIcon(time_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON));
 
     RegisterClassEx(&time_wcex);
     Debug::TryLastErrorMessageBox();
