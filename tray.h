@@ -9,7 +9,7 @@ namespace Tray {
     constexpr UINT TRAY_MENU_EXIT = 1001;
     constexpr UINT TRAY_MENU_SETTING = 1002;
 
-    void AddIcon(HWND h_wnd, HICON h_icon);
+    void AddIcon(HWND h_wnd);
     void RemoveIcon();
     void ShowMenu(HWND hWnd);
 };

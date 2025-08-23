@@ -1,12 +1,16 @@
 #include <windows.h>
 
 #include "tray.h"
+#include "resource.h"
 
 namespace Tray {
 
     NOTIFYICONDATA nid;
 
-    void AddIcon(HWND h_wnd, HICON h_icon) {
+    void AddIcon(HWND h_wnd) {
+
+        HICON h_icon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+
         nid.cbSize = sizeof(NOTIFYICONDATA);
         nid.hWnd = h_wnd;
         nid.uID = ICON_ID;

@@ -3,7 +3,7 @@
 #include <windows.h>
 
 // 设置窗口类
-constexpr TCHAR SETTING_WINDOW_CLASS[ ] = L"SettingWindowClass";
+constexpr TCHAR SETTING_CLASS_NAME[ ] = L"SettingWindowClass";
 
 // 标题栏名
 constexpr TCHAR SETTING_WINDOW_TITLE[ ] = L"Setting";

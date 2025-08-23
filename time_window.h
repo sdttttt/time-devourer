@@ -3,7 +3,7 @@
 #include <windows.h>
 
 // 时间显示窗口类
-constexpr TCHAR TIMER_WINDOW_CLASS[ ] = L"TimeWindowClass";
+constexpr TCHAR TIMER_CLASS_NAME[ ] = L"TimeWindowClass";
 
 // 标题栏名
 constexpr TCHAR TIMER_WINDOW_TITLE[ ] = L"Timer";
