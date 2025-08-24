@@ -4,16 +4,20 @@
 #include <chrono>
 
 // 时间显示窗口类
-constexpr TCHAR TIMER_CLASS_NAME[ ] = L"TimeWindowClass";
+constexpr const TCHAR* TIMER_CLASS_NAME = L"TimeWindowClass";
 // 标题栏名
-constexpr TCHAR TIMER_WINDOW_TITLE[ ] = L"Timer";
+constexpr const TCHAR* TIMER_WINDOW_TITLE = L"Timer";
 
 // 窗口尺寸
 constexpr UINT TIMER_WINDOW_WIDTH = 400;
 constexpr UINT TIMER_WINDOW_HEIGHT = 100;
 // 窗口坐标
-constexpr UINT TIMER_WINDOW_X = 0;
-constexpr UINT TIMER_WINDOW_Y = 0;
+constexpr UINT TIMER_WINDOW_X = 10;
+constexpr UINT TIMER_WINDOW_Y = 10;
+
+// 窗口椭圆坐标
+constexpr UINT TIMER_WINDOW_ROUND_X = 0;
+constexpr UINT TIMER_WINDOW_ROUND_Y = 0;
 // 窗口椭圆的宽度和高度
 constexpr UINT TIMER_WINDOW_ROUND_W = 10;
 constexpr UINT TIMER_WINDOW_ROUND_H = 10;

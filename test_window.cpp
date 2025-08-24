@@ -1,10 +1,21 @@
+
+
 #include <windows.h>
-#include "setting_window.h"
 #include "resource.h"
 #include "common.h"
+#include "digital_font.h"
 
+// 设置窗口类
+constexpr TCHAR TEST_CLASS_NAME[ ] = L"TestWindowClass";
 
-static LRESULT CALLBACK settingWndProc(
+// 标题栏名
+constexpr TCHAR TEST_WINDOW_TITLE[ ] = L"TEST";
+
+// 窗口尺寸
+constexpr UINT TEST_WINDOW_WIDTH = 500;
+constexpr UINT TEST_WINDOW_HEIGHT = 500;
+
+static LRESULT CALLBACK testWndProc(
     _In_ HWND hWnd,
     _In_ UINT message,
     _In_ WPARAM wParam,
@@ -17,6 +28,8 @@ static LRESULT CALLBACK settingWndProc(
     {
     case WM_PAINT: {
         hdc = BeginPaint(hWnd, &ps);
+
+        DigitalFont::DrawDigit(hdc, 0, 0, 8);
 
         EndPaint(hWnd, &ps);
         break;
@@ -39,12 +52,12 @@ static LRESULT CALLBACK settingWndProc(
 }
 
 
-static void registerSettingClass(_In_ HINSTANCE hInstance) {
+static void registerTestClass(_In_ HINSTANCE hInstance) {
     WNDCLASSEX setting_wcex;
 
     setting_wcex.cbSize = sizeof(WNDCLASSEX);
     setting_wcex.style = CS_HREDRAW | CS_VREDRAW;
-    setting_wcex.lpfnWndProc = settingWndProc;
+    setting_wcex.lpfnWndProc = testWndProc;
     setting_wcex.cbClsExtra = 0;
     setting_wcex.cbWndExtra = 0;
     setting_wcex.hInstance = hInstance;
@@ -66,11 +79,11 @@ static void registerSettingClass(_In_ HINSTANCE hInstance) {
 /// <param name="hInstance">应用程序实例的句柄。</param>
 /// <param name="nCmdShow">窗口显示方式的标志。</param>
 /// <returns>如果成功则返回 0，失败则返回 1。</returns>
-int CreateSettingClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
+int CreateTestClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
 
     WNDCLASSEX setting_wcex = { sizeof(WNDCLASSEX) };
     if ( FALSE == GetClassInfoEx(hInstance, TEST_CLASS_NAME, &setting_wcex) ) {
-        registerSettingClass(hInstance);
+        registerTestClass(hInstance);
     }
 
     HWND setting_hwnd = CreateWindowEx(

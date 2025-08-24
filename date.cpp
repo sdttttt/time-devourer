@@ -55,7 +55,9 @@ namespace Date {
 
         return std::chrono::duration_cast< std::chrono::seconds >( next_hour - now );
     }
-#else
+#endif
+
+#ifdef NDEBUG
     // 和下一个整点的距离:秒
     std::chrono::seconds NextHourDistance() {
         struct tm tm = currTM();

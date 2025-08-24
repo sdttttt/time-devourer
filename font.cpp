@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <tchar.h>
 #include "font.h"
-#include "gdi.h"
+#include "gdi_obj.h"
 
 namespace Font {
 
@@ -51,5 +51,4 @@ namespace Font {
         SelectObject(hdc, h_old_font);
     }
 }
-
 

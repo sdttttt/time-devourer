@@ -34,7 +34,11 @@ namespace Tray {
         // 创建弹出菜单
         HMENU h_menu = CreatePopupMenu();
 
-        AppendMenu(h_menu, MF_STRING, TRAY_MENU_SETTING, L"Setting");
+#ifdef  _DEBUG
+        AppendMenu(h_menu, MF_STRING, TRAY_MENU_TEST, L"TEST");
+#endif
+        // TODO: 暂时禁用设置菜单，没啥好用的
+        AppendMenu(h_menu, MF_GRAYED, TRAY_MENU_SETTING, L"Setting");
         AppendMenu(h_menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
 
         // 激活前台窗口

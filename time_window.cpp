@@ -6,6 +6,7 @@
 
 #include "time_window.h"
 #include "setting_window.h"
+#include "test_window.h"
 #include "common.h"
 
 using namespace std::chrono;
@@ -188,6 +189,14 @@ static LRESULT CALLBACK timeWndProc(
             break;
         }
 
+#ifdef _DEBUG
+        case Tray::TRAY_MENU_TEST: {
+            auto hinst = reinterpret_cast< HINSTANCE >( GetWindowLongPtr(hWnd, GWLP_HINSTANCE) );
+            CreateTestClassAndWindow(hinst, SW_SHOWNORMAL);
+            break;
+        }
+#endif
+
         case Tray::TRAY_MENU_EXIT: {
             Exit(hWnd);
             break;
@@ -273,7 +282,7 @@ int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
 
     // Ô²½Ç
     HRGN h_rgn = CreateRoundRectRgn(
-        TIMER_WINDOW_X, TIMER_WINDOW_Y,
+        TIMER_WINDOW_ROUND_X, TIMER_WINDOW_ROUND_Y,
         TIMER_WINDOW_WIDTH, TIMER_WINDOW_HEIGHT,
         TIMER_WINDOW_ROUND_W, TIMER_WINDOW_ROUND_H);
 

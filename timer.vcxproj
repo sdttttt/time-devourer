@@ -129,17 +129,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="date.cpp" />
+    <ClCompile Include="digital_font.cpp" />
     <ClCompile Include="font.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="setting_window.cpp" />
+    <ClCompile Include="test_window.cpp" />
     <ClCompile Include="time_window.cpp" />
     <ClCompile Include="tray.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
+    <ClInclude Include="digital_font.h" />
     <ClInclude Include="font.h" />
-    <ClInclude Include="gdi.h" />
+    <ClInclude Include="gdi_obj.h" />
     <ClInclude Include="setting_window.h" />
+    <ClInclude Include="test_window.h" />
     <ClInclude Include="time_window.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="date.h" />
