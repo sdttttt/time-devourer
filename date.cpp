@@ -2,6 +2,7 @@
 #include <ctime>
 #include <sstream>
 #include <chrono>
+#include "date.h"
 
 namespace Date {
 
@@ -20,7 +21,7 @@ namespace Date {
         const auto tm = currTM();
 
         wchar_t buffer[ 80 ];
-        wcsftime(buffer, sizeof(buffer) / sizeof(wchar_t), L"%H:%M:%S", &tm);
+        wcsftime(buffer, sizeof(buffer) / sizeof(wchar_t), TIME_FORMAT, &tm);
         return buffer;
     }
 

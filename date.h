@@ -5,6 +5,8 @@
 
 namespace Date {
 
+    constexpr const wchar_t* TIME_FORMAT = L"%H:%M:%S";
+
     std::wstring CurrTimeWStr();
 
     std::chrono::hours CurrTimeHour();

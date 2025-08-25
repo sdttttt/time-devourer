@@ -4,6 +4,7 @@
 #include "resource.h"
 #include "common.h"
 #include "digital_font.h"
+#include "date.h"
 
 // …Ë÷√¥∞ø⁄¿‡
 constexpr TCHAR TEST_CLASS_NAME[ ] = L"TestWindowClass";
@@ -29,7 +30,7 @@ static LRESULT CALLBACK testWndProc(
     case WM_PAINT: {
         hdc = BeginPaint(hWnd, &ps);
 
-        DigitalFont::DrawDigit(hdc, 0, 0, 8);
+        DigitalFont::DrawClock(hdc, ps, L"88:88:88");
 
         EndPaint(hWnd, &ps);
         break;

@@ -4,6 +4,7 @@
 #include <vector>
 #include "gdi_obj.h"
 #include "digital_font.h"
+#include "date.h"
 
 /// <summary>
 /// 数码管字体：纯GDI实现
@@ -91,7 +92,36 @@ namespace DigitalFont {
         }
     }
 
-    void DrawClock(HDC hdc) {
+    void DrawClock(HDC hdc, PAINTSTRUCT& ps, std::wstring time_str) {
 
+        int start_x = PAINT_START_X;
+        int start_y = PAINT_START_Y;
+
+        for ( wchar_t c : time_str ) {
+            if ( c >= L'0' && c <= L'9' ) {
+                int digit = c - L'0';
+                DrawDigit(hdc, start_x, start_y, digit);
+                // 每个数码管数字的长度是 SEG_LENGTH + 2*SEG_WIDTH
+                start_x += SEG_LENGTH + 2*SEG_WIDTH + DIGIT_SPACING;
+            }
+
+            if ( c == L':' ) {
+                int colon_y = start_y + (SEG_LENGTH*2 + SEG_WIDTH*3) / 2;
+                
+                IGDI::AutoGDI<HBRUSH> brush(CreateSolidBrush(RGB(0, 0, 0)));
+                HBRUSH old_brash = (HBRUSH)SelectObject(hdc, brush);
+
+                Rectangle(hdc,
+                    start_x, colon_y - COLON_SIZE - COLON_OFFSET_Y,
+                    start_x + COLON_SIZE, colon_y - COLON_OFFSET_Y);
+
+                Rectangle(hdc,
+                    start_x, colon_y + COLON_OFFSET_Y,
+                    start_x + COLON_SIZE, colon_y + COLON_SIZE + COLON_OFFSET_Y);
+                
+                SelectObject(hdc, old_brash);
+                start_x += COLON_SIZE + DIGIT_SPACING;
+            }
+        }
     }
 }
