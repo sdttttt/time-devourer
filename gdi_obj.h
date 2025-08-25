@@ -11,6 +11,8 @@ namespace IGDI {
     struct is_gdi_type<HFONT> : std::true_type {};
     template <>
     struct is_gdi_type<HBRUSH> : std::true_type {};
+    template <>
+    struct is_gdi_type<HPEN> : std::true_type {};
 
     template <typename T>
     class AutoGDI {

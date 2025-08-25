@@ -64,7 +64,7 @@ namespace DigitalFont {
            drawSegment(hdc, seg_x, seg_y, width, height);
         };
 
-        for (auto seg : segments) {
+        for (auto& seg : segments) {
             switch (seg) {
             case SI::TOP:
                 draw_segent(x + w, y, l, w);
@@ -89,5 +89,9 @@ namespace DigitalFont {
                 break;
             }
         }
+    }
+
+    void DrawClock(HDC hdc) {
+
     }
 }

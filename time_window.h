@@ -9,7 +9,7 @@ constexpr const TCHAR* TIMER_CLASS_NAME = L"TimeWindowClass";
 constexpr const TCHAR* TIMER_WINDOW_TITLE = L"Timer";
 
 // 窗口尺寸
-constexpr UINT TIMER_WINDOW_WIDTH = 400;
+constexpr UINT TIMER_WINDOW_WIDTH = 350;
 constexpr UINT TIMER_WINDOW_HEIGHT = 100;
 // 窗口坐标
 constexpr UINT TIMER_WINDOW_X = 10;
@@ -21,6 +21,13 @@ constexpr UINT TIMER_WINDOW_ROUND_Y = 0;
 // 窗口椭圆的宽度和高度
 constexpr UINT TIMER_WINDOW_ROUND_W = 10;
 constexpr UINT TIMER_WINDOW_ROUND_H = 10;
+
+// 窗口的元素间距
+constexpr UINT TIMER_WINDOW_MARGIN = 10;
+
+// 时间显示容器的圆角宽度和高度
+constexpr UINT TIMER_DISPLAY_ROUND_W = 10;
+constexpr UINT TIMER_DISPLAY_ROUND_H = 10;
 
 // 时间的更新定时器
 constexpr UINT_PTR DATE_TIMER_ID = 0x0001;

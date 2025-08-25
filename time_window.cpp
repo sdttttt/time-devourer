@@ -7,6 +7,7 @@
 #include "time_window.h"
 #include "setting_window.h"
 #include "test_window.h"
+#include "gdi_obj.h"
 #include "common.h"
 
 using namespace std::chrono;
@@ -189,13 +190,11 @@ static LRESULT CALLBACK timeWndProc(
             break;
         }
 
-#ifdef _DEBUG
         case Tray::TRAY_MENU_TEST: {
             auto hinst = reinterpret_cast< HINSTANCE >( GetWindowLongPtr(hWnd, GWLP_HINSTANCE) );
             CreateTestClassAndWindow(hinst, SW_SHOWNORMAL);
             break;
         }
-#endif
 
         case Tray::TRAY_MENU_EXIT: {
             Exit(hWnd);
@@ -208,13 +207,39 @@ static LRESULT CALLBACK timeWndProc(
         hdc = BeginPaint(hWnd, &ps);
         auto time_str = Date::CurrTimeWStr();
 
-        RECT rect;
-        GetClientRect(hWnd, &rect);
-        Font::DrawScaledText(hdc, rect, time_str);
+        RECT client_rect;
+        GetClientRect(hWnd, &client_rect);
+        
+        // 绘制背景不填充
+        const int old_bk_mode = SetBkMode(hdc, TRANSPARENT);
+
+        RECT time_rect;
+        time_rect.left = client_rect.left + TIMER_WINDOW_MARGIN;
+        time_rect.top = client_rect.top + TIMER_WINDOW_MARGIN;
+        time_rect.right = time_rect.left + (client_rect.right - client_rect.left) - TIMER_WINDOW_MARGIN * 2 ;
+        time_rect.bottom = time_rect.top + (client_rect.bottom - client_rect.top) - TIMER_WINDOW_MARGIN * 2;
+
+        IGDI::AutoGDI<HBRUSH> brush(CreateSolidBrush(RGB(220, 220, 220)));
+        IGDI::AutoGDI<HPEN> pen(CreatePen(PS_SOLID, 0, RGB(220, 220, 220)));
+
+        const HBRUSH old_brush = (HBRUSH)SelectObject(hdc, brush);
+        const HPEN old_pen = (HPEN)SelectObject(hdc, pen);
+
+        RoundRect(
+            hdc, time_rect.left, time_rect.top, time_rect.right, time_rect.bottom, 
+            TIMER_DISPLAY_ROUND_W, TIMER_DISPLAY_ROUND_H);
+
+        Font::DrawScaledText(hdc, time_rect, time_str);
+
+        // 设置回旧
+        SelectObject(hdc, old_brush);
+        SelectObject(hdc, old_pen);
+        SetBkMode(hdc, old_bk_mode);
 
         EndPaint(hWnd, &ps);
         break;
     }
+
     case WM_CLOSE: {
         DestroyWindow(hWnd);
         break;
@@ -276,7 +301,7 @@ int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
         NULL
     );
     Debug::TryLastErrorMessageBox();
-
+    
     // 设置启动时的不透明度
     SetLayeredWindowAttributes(time_hwnd, 0, 0, LWA_ALPHA);
 

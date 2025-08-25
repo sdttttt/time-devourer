@@ -34,7 +34,7 @@ namespace Font {
         }
     }
 
-    void DrawScaledText(HDC hdc, _In_ const RECT& rect, _In_ const std::wstring& str) {
+    void DrawScaledText(HDC hdc, _In_ RECT& rect, _In_ const std::wstring& str) {
         IGDI::AutoGDI<HFONT> h_font(createScaledFont(hdc, rect, str));
 
         HFONT h_old_font = ( HFONT ) SelectObject(hdc, h_font);
@@ -43,7 +43,7 @@ namespace Font {
             hdc,
             str.c_str(),
             -1,
-            const_cast< LPRECT >( &rect ),
+            &rect,
             DT_SINGLELINE
             | DT_CENTER
             | DT_VCENTER);
