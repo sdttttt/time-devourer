@@ -30,10 +30,14 @@ static LRESULT CALLBACK testWndProc(
     case WM_PAINT: {
         hdc = BeginPaint(hWnd, &ps);
 
-        DigitalFont::DrawClock(hdc, ps, L"88:88:88");
+        DigitalFont::DrawClock(hdc, Date::CurrTimeWStr());
 
         EndPaint(hWnd, &ps);
         break;
+    }
+
+    case WM_TIMER: {
+
     }
 
     case WM_CLOSE: {

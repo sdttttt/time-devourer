@@ -92,7 +92,7 @@ namespace DigitalFont {
         }
     }
 
-    void DrawClock(HDC hdc, PAINTSTRUCT& ps, std::wstring time_str) {
+    void DrawClock(HDC hdc, std::wstring time_str) {
 
         int start_x = PAINT_START_X;
         int start_y = PAINT_START_Y;

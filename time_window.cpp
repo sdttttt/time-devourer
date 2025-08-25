@@ -8,6 +8,7 @@
 #include "setting_window.h"
 #include "test_window.h"
 #include "gdi_obj.h"
+#include "digital_font.h"
 #include "common.h"
 
 using namespace std::chrono;
@@ -106,7 +107,7 @@ static LRESULT CALLBACK timeWndProc(
 
     case WM_TIMER: {
         if ( wParam == DATE_TIMER_ID )
-        {   
+        {
             g_step_down.step();
 
             // 如果距离已经在提醒半径内且提醒未激活：则可以开始提醒
@@ -123,7 +124,7 @@ static LRESULT CALLBACK timeWndProc(
                 g_step_down.reset(Date::NextHourDistance());
              }
 
-            InvalidateRect(hWnd, NULL, FALSE);
+            InvalidateRect(hWnd, NULL, TRUE);
         }
 
         if ( wParam == ANIMATION_TIMER_ID )
@@ -229,12 +230,14 @@ static LRESULT CALLBACK timeWndProc(
             hdc, time_rect.left, time_rect.top, time_rect.right, time_rect.bottom, 
             TIMER_DISPLAY_ROUND_W, TIMER_DISPLAY_ROUND_H);
 
-        Font::DrawScaledText(hdc, time_rect, time_str);
-
-        // 设置回旧
+        //// 设置回旧
         SelectObject(hdc, old_brush);
         SelectObject(hdc, old_pen);
         SetBkMode(hdc, old_bk_mode);
+
+        // 渲染时间
+        DigitalFont::DrawClock(hdc, time_str);
+
 
         EndPaint(hWnd, &ps);
         break;

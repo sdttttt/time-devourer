@@ -9,7 +9,7 @@ constexpr const TCHAR* TIMER_CLASS_NAME = L"TimeWindowClass";
 constexpr const TCHAR* TIMER_WINDOW_TITLE = L"Timer";
 
 // ´°¿Ú³ß´ç
-constexpr UINT TIMER_WINDOW_WIDTH = 350;
+constexpr UINT TIMER_WINDOW_WIDTH = 320;
 constexpr UINT TIMER_WINDOW_HEIGHT = 100;
 // ´°¿Ú×ø±ê
 constexpr UINT TIMER_WINDOW_X = 10;
