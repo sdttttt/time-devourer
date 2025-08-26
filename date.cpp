@@ -20,8 +20,9 @@ namespace Date {
     std::wstring CurrTimeWStr() {
         const auto tm = currTM();
 
-        wchar_t buffer[ 80 ];
-        wcsftime(buffer, sizeof(buffer) / sizeof(wchar_t), TIME_FORMAT, &tm);
+        wchar_t buffer[TIME_FORMAT_LEN()];
+
+        wcsftime(buffer, TIME_FORMAT_LEN(), TIME_FORMAT, &tm);
         return buffer;
     }
 

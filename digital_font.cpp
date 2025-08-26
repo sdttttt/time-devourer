@@ -53,6 +53,7 @@ namespace DigitalFont {
         SelectObject(hdc, oldBrush);
     }
 
+    // 绘制数字
     void DrawDigit(HDC hdc, int x, int y, int digit) {
         if ( digit < 0 || digit > 9 ) return;
         
@@ -92,12 +93,14 @@ namespace DigitalFont {
         }
     }
 
+    // 绘制时钟
     void DrawClock(HDC hdc, std::wstring time_str) {
 
         int start_x = PAINT_START_X;
         int start_y = PAINT_START_Y;
 
         for ( wchar_t c : time_str ) {
+            // 数字
             if ( c >= L'0' && c <= L'9' ) {
                 int digit = c - L'0';
                 DrawDigit(hdc, start_x, start_y, digit);
@@ -105,6 +108,7 @@ namespace DigitalFont {
                 start_x += SEG_LENGTH + 2*SEG_WIDTH + DIGIT_SPACING;
             }
 
+            // 冒号
             if ( c == L':' ) {
                 int colon_y = start_y + (SEG_LENGTH*2 + SEG_WIDTH*3) / 2;
                 
