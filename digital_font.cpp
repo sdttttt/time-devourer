@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <gdiplus.h>
 #include <cmath>
-#include <vector>
+#include <array>
 #include "gdi_obj.h"
 #include "digital_font.h"
 #include "date.h"
@@ -16,7 +16,7 @@ namespace DigitalFont {
 
     // 标准七段数码管段索引（0-6）
     enum class SegmentIndex {
-        TOP,       // 上横段
+        TOP = 1,       // 上横段
         LEFT_UP,   // 左上竖段
         RIGHT_UP,  // 右上竖段
         MIDDLE,    // 中横段
@@ -28,8 +28,8 @@ namespace DigitalFont {
     typedef SegmentIndex SI;
     
    // 定义七段数码管的段索引
-    static const std::vector<std::vector<SI>> DigitSegments = {
-        {SI::TOP, SI::BOTTOM, SI::LEFT_UP, SI::LEFT_DOWN, SI::RIGHT_UP, SI::RIGHT_DOWN},  // 0
+    constexpr std::array<std::array<SI, 7>, 10> DigitSegments = {
+        std::array<SI, 7>{SI::TOP, SI::BOTTOM, SI::LEFT_UP, SI::LEFT_DOWN, SI::RIGHT_UP, SI::RIGHT_DOWN},  // 0
         {SI::RIGHT_UP, SI::RIGHT_DOWN},          // 1
         {SI::TOP, SI::MIDDLE, SI::BOTTOM, SI::RIGHT_UP, SI::LEFT_DOWN},    // 2
         {SI::TOP, SI::MIDDLE, SI::BOTTOM, SI::RIGHT_UP, SI::RIGHT_DOWN}, // 3
@@ -56,7 +56,7 @@ namespace DigitalFont {
     void DrawDigit(HDC hdc, int x, int y, int digit) {
         if ( digit < 0 || digit > 9 ) return;
         
-        const std::vector<SI>& segments = DigitSegments[digit];
+        const auto& segments = DigitSegments[digit];
 
         constexpr int w = SEG_WIDTH;
         constexpr int l = SEG_LENGTH;
