@@ -7,10 +7,10 @@
 #include "date.h"
 
 // 设置窗口类
-constexpr TCHAR TEST_CLASS_NAME[ ] = L"TestWindowClass";
+constexpr auto TEST_CLASS_NAME = L"TestWindowClass";
 
 // 标题栏名
-constexpr TCHAR TEST_WINDOW_TITLE[ ] = L"TEST";
+constexpr auto TEST_WINDOW_TITLE = L"TEST";
 
 // 窗口尺寸
 constexpr UINT TEST_WINDOW_WIDTH = 500;
@@ -27,6 +27,7 @@ static LRESULT CALLBACK testWndProc(
 
     switch ( message )
     {
+    
     case WM_PAINT: {
         hdc = BeginPaint(hWnd, &ps);
 

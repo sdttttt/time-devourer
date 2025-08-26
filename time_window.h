@@ -4,9 +4,9 @@
 #include <chrono>
 
 // 时间显示窗口类
-constexpr const TCHAR* TIMER_CLASS_NAME = L"TimeWindowClass";
+constexpr auto TIMER_CLASS_NAME = L"TimeWindowClass";
 // 标题栏名
-constexpr const TCHAR* TIMER_WINDOW_TITLE = L"Timer";
+constexpr auto TIMER_WINDOW_TITLE = L"Timer";
 
 // 窗口尺寸
 constexpr UINT TIMER_WINDOW_WIDTH = 320;

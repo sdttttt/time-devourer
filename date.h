@@ -5,7 +5,7 @@
 
 namespace Date {
 
-    constexpr const wchar_t* TIME_FORMAT = L"%H:%M:%S";
+    constexpr auto TIME_FORMAT = L"%H:%M:%S";
 
     std::wstring CurrTimeWStr();
 
