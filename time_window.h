@@ -9,36 +9,36 @@ constexpr auto TIMER_CLASS_NAME = L"TimeWindowClass";
 constexpr auto TIMER_WINDOW_TITLE = L"Timer";
 
 // 窗口尺寸
-constexpr UINT TIMER_WINDOW_WIDTH = 320;
-constexpr UINT TIMER_WINDOW_HEIGHT = 100;
+constexpr auto TIMER_WINDOW_WIDTH = 320;
+constexpr auto TIMER_WINDOW_HEIGHT = 100;
 // 窗口坐标
-constexpr UINT TIMER_WINDOW_X = 10;
-constexpr UINT TIMER_WINDOW_Y = 10;
+constexpr auto TIMER_WINDOW_X = 10;
+constexpr auto TIMER_WINDOW_Y = 10;
 
 // 窗口椭圆坐标
-constexpr UINT TIMER_WINDOW_ROUND_X = 0;
-constexpr UINT TIMER_WINDOW_ROUND_Y = 0;
+constexpr auto TIMER_WINDOW_ROUND_X = 0;
+constexpr auto TIMER_WINDOW_ROUND_Y = 0;
 // 窗口椭圆的宽度和高度
-constexpr UINT TIMER_WINDOW_ROUND_W = 10;
-constexpr UINT TIMER_WINDOW_ROUND_H = 10;
+constexpr auto TIMER_WINDOW_ROUND_W = 10;
+constexpr auto TIMER_WINDOW_ROUND_H = 10;
 
 // 窗口的元素间距
-constexpr UINT TIMER_WINDOW_MARGIN = 10;
+constexpr auto TIMER_WINDOW_MARGIN = 10;
 
 // 时间显示容器的圆角宽度和高度
-constexpr UINT TIMER_DISPLAY_ROUND_W = 10;
-constexpr UINT TIMER_DISPLAY_ROUND_H = 10;
+constexpr auto TIMER_DISPLAY_ROUND_W = 10;
+constexpr auto TIMER_DISPLAY_ROUND_H = 10;
 
 // 时间的更新定时器
-constexpr UINT_PTR DATE_TIMER_ID = 0x0001;
+constexpr auto DATE_TIMER_ID = 0x0001;
 // 动画的更新定时器
-constexpr UINT_PTR ANIMATION_TIMER_ID = 0x0002;
+constexpr auto ANIMATION_TIMER_ID = 0x0002;
 
 // 窗口显示时间半径: 秒
-constexpr UINT WINDOWS_SHOW_TIME_RADIUS_SEC = 30;
+constexpr auto WINDOWS_SHOW_TIME_RADIUS_SEC = 30;
 
 // 动画的淡入淡速度
-constexpr UINT FADE_DURATION = 5;
+constexpr auto FADE_DURATION = 5;
 
 int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
 

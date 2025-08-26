@@ -13,8 +13,8 @@ constexpr auto TEST_CLASS_NAME = L"TestWindowClass";
 constexpr auto TEST_WINDOW_TITLE = L"TEST";
 
 // ´°¿Ú³ß´ç
-constexpr UINT TEST_WINDOW_WIDTH = 500;
-constexpr UINT TEST_WINDOW_HEIGHT = 500;
+constexpr auto TEST_WINDOW_WIDTH = 500;
+constexpr auto TEST_WINDOW_HEIGHT = 500;
 
 static LRESULT CALLBACK testWndProc(
     _In_ HWND hWnd,
