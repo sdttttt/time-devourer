@@ -2,13 +2,13 @@
 
 #include <windows.h>
 
-// ÉèÖÃ´°¿ÚÀà
+// è®¾ç½®çª—å£ç±»
 constexpr auto TEST_CLASS_NAME = L"SettingWindowClass";
 
-// ±êÌâÀ¸Ãû
+// æ ‡é¢˜æ å
 constexpr auto TEST_WINDOW_TITLE = L"Setting";
 
-// ´°¿Ú³ß´ç
+// çª—å£å°ºå¯¸
 constexpr auto TEST_WINDOW_WIDTH = 500;
 constexpr auto TEST_WINDOW_HEIGHT = 500;
 

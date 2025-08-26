@@ -29,17 +29,17 @@ namespace Tray {
         POINT pt;
         GetCursorPos(&pt);
 
-        // ´´½¨µ¯³ö²Ëµ¥
+        // åˆ›å»ºå¼¹å‡ºèœå•
         HMENU h_menu = CreatePopupMenu();
 
 #ifdef  _DEBUG
         AppendMenu(h_menu, MF_STRING, TRAY_MENU_TEST, L"TEST");
 #endif
-        // TODO: ÔİÊ±½ûÓÃÉèÖÃ²Ëµ¥£¬Ã»É¶ºÃÓÃµÄ
+        // TODO: æš‚æ—¶ç¦ç”¨è®¾ç½®èœå•ï¼Œæ²¡å•¥å¥½ç”¨çš„
         AppendMenu(h_menu, MF_GRAYED, TRAY_MENU_SETTING, L"Setting");
         AppendMenu(h_menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
 
-        // ¼¤»îÇ°Ì¨´°¿Ú
+        // æ¿€æ´»å‰å°çª—å£
         SetForegroundWindow(hWnd);
 
         TrackPopupMenu(

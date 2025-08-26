@@ -4,18 +4,18 @@
 #include <sstream>
 
 namespace DigitalFont {
-    constexpr auto SEG_WIDTH = 4;      // ÊıÂë¹Ü¶ÎµÄ¿í¶È
-    constexpr auto SEG_LENGTH = 25;    // ÊıÂë¹Ü¶ÎµÄ³¤¶È
-    constexpr auto DIGIT_SPACING = 10; // Êı×ÖÖ®¼äµÄ¼ä¾à
+    constexpr auto SEG_WIDTH = 4;      // æ•°ç ç®¡æ®µçš„å®½åº¦
+    constexpr auto SEG_LENGTH = 25;    // æ•°ç ç®¡æ®µçš„é•¿åº¦
+    constexpr auto DIGIT_SPACING = 10; // æ•°å­—ä¹‹é—´çš„é—´è·
 
-    constexpr auto PAINT_START_X = 20; // »æÖÆµÄÆğÊ¼×ø±êX
-    constexpr auto PAINT_START_Y = 20; // »æÖÆµÄÆğÊ¼×ø±êY
+    constexpr auto PAINT_START_X = 20; // ç»˜åˆ¶çš„èµ·å§‹åæ ‡X
+    constexpr auto PAINT_START_Y = 20; // ç»˜åˆ¶çš„èµ·å§‹åæ ‡Y
 
-    constexpr auto COLON_SIZE = 5;     // Ã°ºÅ·½¿é´óĞ¡
-    constexpr auto COLON_GAP = 20;     // Ã°ºÅÖ®¼äµÄ¼ä¾à
-    constexpr auto COLON_OFFSET_Y = 8; // Ã°ºÅµÄÆ«ÒÆÁ¿
+    constexpr auto COLON_SIZE = 5;     // å†’å·æ–¹å—å¤§å°
+    constexpr auto COLON_GAP = 20;     // å†’å·ä¹‹é—´çš„é—´è·
+    constexpr auto COLON_OFFSET_Y = 8; // å†’å·çš„åç§»é‡
 
 
     void DrawDigit(HDC hdc, int x, int y, int digit);
-    void DrawClock(HDC hdc, std::wstring time_str);
+    void DrawClock(HDC hdc, std::wstring& time_str);
 }

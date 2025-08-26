@@ -2,7 +2,7 @@
 
 #include <windows.h>
 
-namespace Debug { 
+namespace Debug {
 
     inline void TryLastErrorMessageBox() {
 #if _DEBUG

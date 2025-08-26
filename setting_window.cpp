@@ -61,11 +61,11 @@ static void registerSettingClass(_In_ HINSTANCE hInstance) {
 }
 
 /// <summary>
-/// �������ô����ಢ��ʾ���ڡ�
+/// 创建设置窗口类并显示窗口。
 /// </summary>
-/// <param name="hInstance">Ӧ�ó���ʵ���ľ����</param>
-/// <param name="nCmdShow">������ʾ��ʽ�ı�־��</param>
-/// <returns>����ɹ��򷵻� 0��ʧ���򷵻� 1��</returns>
+/// <param name="hInstance">应用程序实例的句柄。</param>
+/// <param name="nCmdShow">窗口显示方式的标志。</param>
+/// <returns>如果成功则返回 0，失败则返回 1。</returns>
 int CreateSettingClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
 
     WNDCLASSEX setting_wcex = { sizeof(WNDCLASSEX) };

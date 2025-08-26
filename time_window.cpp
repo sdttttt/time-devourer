@@ -14,14 +14,14 @@
 using namespace std::chrono;
 
 struct WindowPos {
-    BOOL is_dragging = FALSE; // ´°¿ÚÒÆ¶¯×´Ì¬
-    POINT drag_start = { 0, 0 }; // Êó±êÍÏ¶¯Î»ÖÃÆğµã
+    BOOL is_dragging = FALSE; // çª—å£ç§»åŠ¨çŠ¶æ€
+    POINT drag_start = { 0, 0 }; // é¼ æ ‡æ‹–åŠ¨ä½ç½®èµ·ç‚¹
 };
 
 struct WindowDisplay {
-    BOOL is_show = FALSE;  // ´°¿ÚÊÇ·ñÏÔÊ¾
-    UINT alpha = 0; // Í¸Ã÷¶È
-    BOOL fading = FALSE; // ´°¿Ú¶¯»­±êÊ¶, ÎªTRUEÊ±´°¿ÚÕıÔÚ½øĞĞ(ÏûÊ§|½øÈë)¶¯»­
+    BOOL is_show = FALSE;  // çª—å£æ˜¯å¦æ˜¾ç¤º
+    UINT alpha = 0; // é€æ˜åº¦
+    BOOL fading = FALSE; // çª—å£åŠ¨ç”»æ ‡è¯†, ä¸ºTRUEæ—¶çª—å£æ­£åœ¨è¿›è¡Œ(æ¶ˆå¤±|è¿›å…¥)åŠ¨ç”»
 };
 
 
@@ -34,28 +34,28 @@ static void Exit(HWND hwnd) {
 static void timerWindowFadeIn(HWND hwnd, WindowDisplay& wd) {
     wd.is_show = TRUE;
     wd.fading = TRUE;
-    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // Æô¶¯ĞÂ¶¨Ê±Æ÷
+    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // å¯åŠ¨æ–°å®šæ—¶å™¨
 }
 
 static void timerWindowFadeOut(HWND hwnd, WindowDisplay& wd) {
     wd.is_show = FALSE;
     wd.fading = TRUE;
-    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // Æô¶¯ĞÂ¶¨Ê±Æ÷
+    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // å¯åŠ¨æ–°å®šæ—¶å™¨
 }
 
 static void updateTimerWindowFadeAnimation(HWND hwnd, WindowDisplay& wd) {
-    // ÌáĞÑ´°¿Ú¿ªÊ¼¶¯»­
+    // æé†’çª—å£å¼€å§‹åŠ¨ç”»
     if ( wd.fading && wd.is_show ) {
         wd.alpha += FADE_DURATION;
         if ( wd.alpha >= 255 ) {
             wd.alpha = 255;
             wd.fading = FALSE;
-            // ¶¯»­½áÊø¹Ø±Õ¶¯»­¶¨Ê±Æ÷
+            // åŠ¨ç”»ç»“æŸå…³é—­åŠ¨ç”»å®šæ—¶å™¨
             KillTimer(hwnd, ANIMATION_TIMER_ID);
         }
     }
 
-    // ÌáĞÑ´°¿Ú½áÊø¶¯»­
+    // æé†’çª—å£ç»“æŸåŠ¨ç”»
     if ( wd.fading && FALSE == wd.is_show ) {
         wd.alpha -= FADE_DURATION;
         if ( wd.alpha <= 0 ) {
@@ -78,14 +78,14 @@ static LRESULT CALLBACK timeWndProc(
     PAINTSTRUCT ps;
     HDC hdc;
 
-    // ´°¿ÚÎ»ÖÃ×´Ì¬
+    // çª—å£ä½ç½®çŠ¶æ€
     static WindowPos g_window_pos;
-    // ´°¿ÚÏÔÊ¾×´Ì¬
+    // çª—å£æ˜¾ç¤ºçŠ¶æ€
     static WindowDisplay g_window_display;
-    
-    // ¼Æ²½Æ÷
+
+    // è®¡æ­¥å™¨
     static StepCountDown g_step_down(Date::NextHourDistance());
-    
+
     switch ( message )
     {
     case WM_CREATE: {
@@ -110,19 +110,19 @@ static LRESULT CALLBACK timeWndProc(
         {
             g_step_down.step();
 
-            // Èç¹û¾àÀëÒÑ¾­ÔÚÌáĞÑ°ë¾¶ÄÚÇÒÌáĞÑÎ´¼¤»î£ºÔò¿ÉÒÔ¿ªÊ¼ÌáĞÑ
-            if ( g_step_down.distance() <= WINDOWS_SHOW_TIME_RADIUS_SEC && FALSE == g_window_display.is_show  )
+            // å¦‚æœè·ç¦»å·²ç»åœ¨æé†’åŠå¾„å†…ä¸”æé†’æœªæ¿€æ´»ï¼šåˆ™å¯ä»¥å¼€å§‹æé†’
+            if ( g_step_down.distance() <= WINDOWS_SHOW_TIME_RADIUS_SEC && FALSE == g_window_display.is_show )
             {
                 timerWindowFadeIn(hWnd, g_window_display);
             }
 
-            // Èç¹ûÌáĞÑ¼¤»î£¬ÇÒ¾àÀëÒÑ¾­³¬³öÌáĞÑ°ë¾¶£ºÔòÍ£Ö¹ÌáĞÑ£¬ÖØÖÃ¾àÀë¼ÆËã
+            // å¦‚æœæé†’æ¿€æ´»ï¼Œä¸”è·ç¦»å·²ç»è¶…å‡ºæé†’åŠå¾„ï¼šåˆ™åœæ­¢æé†’ï¼Œé‡ç½®è·ç¦»è®¡ç®—
             if ( g_step_down.distance() > WINDOWS_SHOW_TIME_RADIUS_SEC && g_window_display.is_show )
             {
                 timerWindowFadeOut(hWnd, g_window_display);
-                // ÖØĞÂ¼ÆËãÏÂÒ»´ÎÊ±¼ä
+                // é‡æ–°è®¡ç®—ä¸‹ä¸€æ¬¡æ—¶é—´
                 g_step_down.reset(Date::NextHourDistance());
-             }
+            }
 
             InvalidateRect(hWnd, NULL, TRUE);
         }
@@ -134,22 +134,22 @@ static LRESULT CALLBACK timeWndProc(
         break;
     }
 
-    // Êó±ê°´ÏÂ
+                 // é¼ æ ‡æŒ‰ä¸‹
     case WM_LBUTTONDOWN: {
-        // Êó±êÎ»ÖÃ
+        // é¼ æ ‡ä½ç½®
         POINT pt = { LOWORD(lParam), HIWORD(lParam) };
 
         RECT rect;
-        // »ñµÃ´°¿Ú¾ØĞÎ
+        // è·å¾—çª—å£çŸ©å½¢
         GetClientRect(hWnd, &rect);
         RECT area_rect = rect;
 
-        // ¼ì²éÊó±êÎ»ÖÃÊÇ·ñÔÚ´°¿Ú¾ØĞÎÄÚ
+        // æ£€æŸ¥é¼ æ ‡ä½ç½®æ˜¯å¦åœ¨çª—å£çŸ©å½¢å†…
         if ( PtInRect(&area_rect, pt) ) {
             g_window_pos.drag_start = pt;
             g_window_pos.is_dragging = TRUE;
 
-            // ÉèÖÃÊó±ê²¶»ñÒÔ¼°ĞŞ¸ÄÊó±êÑùÊ½
+            // è®¾ç½®é¼ æ ‡æ•è·ä»¥åŠä¿®æ”¹é¼ æ ‡æ ·å¼
             SetCapture(hWnd);
             SetCursor(LoadCursor(NULL, IDC_SIZEALL));
         }
@@ -177,7 +177,7 @@ static LRESULT CALLBACK timeWndProc(
             int new_x = rect.left + ( pt.x - ( rect.left + g_window_pos.drag_start.x ) );
             int new_y = rect.top + ( pt.y - ( rect.top + g_window_pos.drag_start.y ) );
 
-            // ÒÆ¶¯´°¿Ú
+            // ç§»åŠ¨çª—å£
             SetWindowPos(hWnd, NULL, new_x, new_y, 0, 0,
                 SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
         }
@@ -186,7 +186,7 @@ static LRESULT CALLBACK timeWndProc(
     case WM_COMMAND: {
         switch ( LOWORD(wParam) ) {
         case Tray::TRAY_MENU_SETTING: {
-            auto hinst = reinterpret_cast<HINSTANCE>(GetWindowLongPtr(hWnd, GWLP_HINSTANCE));
+            auto hinst = reinterpret_cast< HINSTANCE >( GetWindowLongPtr(hWnd, GWLP_HINSTANCE) );
             CreateSettingClassAndWindow(hinst, SW_SHOWNORMAL);
             break;
         }
@@ -210,32 +210,32 @@ static LRESULT CALLBACK timeWndProc(
 
         RECT client_rect;
         GetClientRect(hWnd, &client_rect);
-        
-        // »æÖÆ±³¾°²»Ìî³ä
+
+        // ç»˜åˆ¶èƒŒæ™¯ä¸å¡«å……
         const int old_bk_mode = SetBkMode(hdc, TRANSPARENT);
 
         RECT time_rect;
         time_rect.left = client_rect.left + TIMER_WINDOW_MARGIN;
         time_rect.top = client_rect.top + TIMER_WINDOW_MARGIN;
-        time_rect.right = time_rect.left + (client_rect.right - client_rect.left) - TIMER_WINDOW_MARGIN * 2 ;
-        time_rect.bottom = time_rect.top + (client_rect.bottom - client_rect.top) - TIMER_WINDOW_MARGIN * 2;
+        time_rect.right = time_rect.left + ( client_rect.right - client_rect.left ) - TIMER_WINDOW_MARGIN * 2;
+        time_rect.bottom = time_rect.top + ( client_rect.bottom - client_rect.top ) - TIMER_WINDOW_MARGIN * 2;
 
         IGDI::AutoGDI<HBRUSH> brush(CreateSolidBrush(RGB(220, 220, 220)));
         IGDI::AutoGDI<HPEN> pen(CreatePen(PS_SOLID, 0, RGB(220, 220, 220)));
 
-        const HBRUSH old_brush = (HBRUSH)SelectObject(hdc, brush);
-        const HPEN old_pen = (HPEN)SelectObject(hdc, pen);
+        const HBRUSH old_brush = ( HBRUSH ) SelectObject(hdc, brush);
+        const HPEN old_pen = ( HPEN ) SelectObject(hdc, pen);
 
         RoundRect(
-            hdc, time_rect.left, time_rect.top, time_rect.right, time_rect.bottom, 
+            hdc, time_rect.left, time_rect.top, time_rect.right, time_rect.bottom,
             TIMER_DISPLAY_ROUND_W, TIMER_DISPLAY_ROUND_H);
 
-        //// ÉèÖÃ»Ø¾É
+        //// è®¾ç½®å›æ—§
         SelectObject(hdc, old_brush);
         SelectObject(hdc, old_pen);
         SetBkMode(hdc, old_bk_mode);
 
-        // äÖÈ¾Ê±¼ä
+        // æ¸²æŸ“æ—¶é—´
         DigitalFont::DrawClock(hdc, time_str);
 
 
@@ -279,14 +279,14 @@ void registerTimeClass(_In_ HINSTANCE hInstance) {
 }
 
 /// <summary>
-/// ´´½¨Ò»¸ö¶¨Ê±Æ÷´°¿ÚÀà²¢ÏÔÊ¾´°¿Ú£¬ÉèÖÃ´°¿ÚÑùÊ½¡¢Ô²½ÇºÍ¶¨Ê±Æ÷¡£
+/// åˆ›å»ºä¸€ä¸ªå®šæ—¶å™¨çª—å£ç±»å¹¶æ˜¾ç¤ºçª—å£ï¼Œè®¾ç½®çª—å£æ ·å¼ã€åœ†è§’å’Œå®šæ—¶å™¨ã€‚
 /// </summary>
-/// <param name="hInstance">Ó¦ÓÃ³ÌĞòÊµÀı¾ä±ú¡£</param>
-/// <param name="nCmdShow">´°¿ÚÏÔÊ¾·½Ê½¡£</param>
-/// <returns>Èç¹û³É¹¦Ôò·µ»Ø0£¬Èç¹ûÊ§°ÜÔò·µ»Ø1¡£</returns>
+/// <param name="hInstance">åº”ç”¨ç¨‹åºå®ä¾‹å¥æŸ„ã€‚</param>
+/// <param name="nCmdShow">çª—å£æ˜¾ç¤ºæ–¹å¼ã€‚</param>
+/// <returns>å¦‚æœæˆåŠŸåˆ™è¿”å›0ï¼Œå¦‚æœå¤±è´¥åˆ™è¿”å›1ã€‚</returns>
 int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
-    
-    WNDCLASSEX time_wcex = { sizeof(WNDCLASSEX)};
+
+    WNDCLASSEX time_wcex = { sizeof(WNDCLASSEX) };
     if ( FALSE == GetClassInfoEx(hInstance, TIMER_CLASS_NAME, &time_wcex) ) {
         registerTimeClass(hInstance);
     }
@@ -304,18 +304,18 @@ int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
         NULL
     );
     Debug::TryLastErrorMessageBox();
-    
-    // ÉèÖÃÆô¶¯Ê±µÄ²»Í¸Ã÷¶È
+
+    // è®¾ç½®å¯åŠ¨æ—¶çš„ä¸é€æ˜åº¦
     SetLayeredWindowAttributes(time_hwnd, 0, 0, LWA_ALPHA);
 
-    // Ô²½Ç
+    // åœ†è§’
     HRGN h_rgn = CreateRoundRectRgn(
         TIMER_WINDOW_ROUND_X, TIMER_WINDOW_ROUND_Y,
         TIMER_WINDOW_WIDTH, TIMER_WINDOW_HEIGHT,
         TIMER_WINDOW_ROUND_W, TIMER_WINDOW_ROUND_H);
 
     SetWindowRgn(time_hwnd, h_rgn, TRUE);
-    
+
     SetWindowPos(
         time_hwnd, NULL,
         TIMER_WINDOW_X, TIMER_WINDOW_Y,

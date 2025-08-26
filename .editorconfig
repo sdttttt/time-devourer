@@ -5,72 +5,93 @@ root = true
 
 # Visual C++ 代码样式设置
 
-cpp_generate_documentation_comments = xml
+# --- 通用设置 ---
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
 
-# Visual C++ 格式设置
-
+# --- 基础缩进 ---
 indent_style = space
 indent_size = 4
-tab_width= 4
-cpp_indent_braces = false
-cpp_indent_multi_line_relative_to = innermost_parenthesis
-cpp_indent_within_parentheses = indent
-cpp_indent_preserve_within_parentheses = false
-cpp_indent_case_contents = true
-cpp_indent_case_labels = false
-cpp_indent_case_contents_when_block = false
-cpp_indent_lambda_braces_when_parameter = true
-cpp_indent_goto_labels = one_left
-cpp_indent_preprocessor = leftmost_column
-cpp_indent_access_specifiers = false
-cpp_indent_namespace_contents = true
-cpp_indent_preserve_comments = false
+tab_width = 4
+
+# --- 代码样式 (移除 VS 特有设置，Clang-Format 不通过 .editorconfig 控制) ---
+# cpp_generate_documentation_comments = xml
+# (注释生成由编辑器或 clang-format 独立控制)
+
+# --- 格式化规则 (调整为 LLVM 风格) ---
+
+# **缩进 (Indentation)**
+# LLVM: 函数体、命名空间、case 内容、lambda 等通常缩进。
+cpp_indent_braces = false # LLVM 通常为 false (开括号不额外缩进)
+cpp_indent_multi_line_relative_to = innermost_parenthesis # 与 LLVM 一致
+cpp_indent_within_parentheses = indent # LLVM 倾向于缩进
+cpp_indent_preserve_within_parentheses = false # 与 LLVM 一致
+cpp_indent_case_contents = true # LLVM: case 内容缩进
+cpp_indent_case_labels = false # LLVM: case 标签不额外缩进 (与内容对齐)
+cpp_indent_case_contents_when_block = false # 与 LLVM 一致
+cpp_indent_lambda_braces_when_parameter = true # 保持原样
+cpp_indent_goto_labels = one_left # LLVM 通常将 goto 标签左对齐或向左缩进一级
+cpp_indent_preprocessor = leftmost_column # #define, #if 等预处理器指令通常左对齐
+cpp_indent_access_specifiers = false # LLVM: public/private/protected 不额外缩进 (与成员对齐)
+cpp_indent_namespace_contents = true # LLVM: 命名空间内容缩进
+cpp_indent_preserve_comments = false # 通常不保留注释的原始缩进
+
+# **换行 (New Lines)**
+# LLVM 通常将 { 放在行尾 (Attach)。
 cpp_new_line_before_open_brace_namespace = ignore
 cpp_new_line_before_open_brace_type = ignore
 cpp_new_line_before_open_brace_function = ignore
 cpp_new_line_before_open_brace_block = ignore
 cpp_new_line_before_open_brace_lambda = ignore
-cpp_new_line_scope_braces_on_separate_lines = false
-cpp_new_line_close_brace_same_line_empty_type = false
-cpp_new_line_close_brace_same_line_empty_function = false
-cpp_new_line_before_catch = true
-cpp_new_line_before_else = true
-cpp_new_line_before_while_in_do_while = false
-cpp_space_before_function_open_parenthesis = remove
-cpp_space_within_parameter_list_parentheses = false
-cpp_space_between_empty_parameter_list_parentheses = false
-cpp_space_after_keywords_in_control_flow_statements = true
-cpp_space_within_control_flow_statement_parentheses = true
-cpp_space_before_lambda_open_parenthesis = false
-cpp_space_within_cast_parentheses = true
-cpp_space_after_cast_close_parenthesis = true
-cpp_space_within_expression_parentheses = true
-cpp_space_before_block_open_brace = true
-cpp_space_between_empty_braces = false
-cpp_space_before_initializer_list_open_brace = false
-cpp_space_within_initializer_list_braces = true
-cpp_space_preserve_in_initializer_list = true
-cpp_space_before_open_square_bracket = false
-cpp_space_within_square_brackets = true
-cpp_space_before_empty_square_brackets = false
-cpp_space_between_empty_square_brackets = true
-cpp_space_group_square_brackets = true
-cpp_space_within_lambda_brackets = false
-cpp_space_between_empty_lambda_brackets = false
-cpp_space_before_comma = false
-cpp_space_after_comma = true
-cpp_space_remove_around_member_operators = true
-cpp_space_before_inheritance_colon = true
-cpp_space_before_constructor_colon = true
-cpp_space_remove_before_semicolon = true
-cpp_space_after_semicolon = true
-cpp_space_remove_around_unary_operator = true
-cpp_space_around_binary_operator = insert
-cpp_space_around_assignment_operator = insert
-cpp_space_pointer_reference_alignment = left
-cpp_space_around_ternary_operator = insert
-cpp_use_unreal_engine_macro_formatting = true
-cpp_wrap_preserve_blocks = one_liners
+# (注：.editorconfig 无法强制 { 的位置，这由 clang-format 的 BreakBeforeBraces 控制)
+
+cpp_new_line_scope_braces_on_separate_lines = false # 通常不强制
+cpp_new_line_close_brace_same_line_empty_type = false # 空类/结构体 } 通常在新行
+cpp_new_line_close_brace_same_line_empty_function = false # 空函数 } 通常在新行
+cpp_new_line_before_catch = true # LLVM: catch 前换行
+cpp_new_line_before_else = true # LLVM: else 前换行
+cpp_new_line_before_while_in_do_while = false # do { ... } while(); while 不换行
+# (注：do-while 的换行在 .editorconfig 中控制有限)
+
+# **空格 (Spacing)**
+# LLVM 风格强调可读性，通常在操作符周围加空格。
+cpp_space_before_function_open_parenthesis = remove # foo() 不在函数名后加空格
+cpp_space_within_parameter_list_parentheses = false # foo(int a, int b) 括号内无空格
+cpp_space_between_empty_parameter_list_parentheses = false # foo() 无空格
+cpp_space_after_keywords_in_control_flow_statements = true # if ( ... ), for ( ... )
+cpp_space_within_control_flow_statement_parentheses = true # if ( condition ) 括号内有空格
+cpp_space_before_lambda_open_parenthesis = false # []() 不在 [] 后加空格
+cpp_space_within_cast_parentheses = true # (int) x 括号内有空格
+cpp_space_after_cast_close_parenthesis = true # (int) x 在右括号后有空格
+cpp_space_within_expression_parentheses = true # ( a + b ) 表达式括号内有空格
+cpp_space_before_block_open_brace = true # if (cond) { 在 { 前有空格
+cpp_space_between_empty_braces = false # {} 无空格
+cpp_space_before_initializer_list_open_brace = false # {1, 2, 3} 在 { 前无空格
+cpp_space_within_initializer_list_braces = true # { 1, 2, 3 } 花括号内有空格
+cpp_space_preserve_in_initializer_list = true # 保持初始化列表中的空格
+cpp_space_before_open_square_bracket = false # array[i] 不在 [ 前加空格
+cpp_space_within_square_brackets = true # array[ i ] LLVM 通常在 [] 内有空格
+cpp_space_before_empty_square_brackets = false # array[] 无空格
+cpp_space_between_empty_square_brackets = true # [] 有空格? (LLVM 通常无空格，但 .editorconfig 此项意义不大)
+cpp_space_group_square_brackets = true # 保持
+cpp_space_within_lambda_brackets = false # []() 捕获列表内无空格
+cpp_space_between_empty_lambda_brackets = false # []() 无空格
+cpp_space_before_comma = false # a, b 不在逗号前加空格
+cpp_space_after_comma = true # a, b 在逗号后加空格
+cpp_space_remove_around_member_operators = true # a.b, a->b, A::B 通常无空格 (LLVM 无空格)
+cpp_space_before_inheritance_colon = true # class Base : public A 通常在 : 前有空格
+cpp_space_before_constructor_colon = true # Base() : a(0) 在 : 前有空格
+cpp_space_remove_before_semicolon = true # a; 不在分号前加空格
+cpp_space_after_semicolon = true # for (int i = 0; i < 10; ++i) 在分号后加空格
+cpp_space_remove_around_unary_operator = true # ++i, !cond, &a, *ptr 通常无空格
+cpp_space_around_binary_operator = insert # a + b, a == b 在二元操作符周围加空格
+cpp_space_around_assignment_operator = insert # a = b, a += b 在赋值操作符周围加空格
+cpp_space_pointer_reference_alignment = left # int* p; (指针符号 * 靠左)
+cpp_space_around_ternary_operator = insert # a ? b : c 在 ?: 周围加空格
+cpp_use_unreal_engine_macro_formatting = false # 改为 false，除非你使用 UE
+cpp_wrap_preserve_blocks = one_liners # 保持
 
 # Visual C++ 包含清理设置
 

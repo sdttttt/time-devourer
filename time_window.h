@@ -3,49 +3,49 @@
 #include <windows.h>
 #include <chrono>
 
-// ʱ����ʾ������
+// 时间显示窗口类
 constexpr auto TIMER_CLASS_NAME = L"TimeWindowClass";
-// ��������
+// 标题栏名
 constexpr auto TIMER_WINDOW_TITLE = L"Timer";
 
-// ���ڳߴ�
+// 窗口尺寸
 constexpr auto TIMER_WINDOW_WIDTH = 320;
 constexpr auto TIMER_WINDOW_HEIGHT = 100;
-// ��������
+// 窗口坐标
 constexpr auto TIMER_WINDOW_X = 10;
 constexpr auto TIMER_WINDOW_Y = 10;
 
-// ������Բ����
+// 窗口椭圆坐标
 constexpr auto TIMER_WINDOW_ROUND_X = 0;
 constexpr auto TIMER_WINDOW_ROUND_Y = 0;
-// ������Բ�Ŀ��Ⱥ͸߶�
+// 窗口椭圆的宽度和高度
 constexpr auto TIMER_WINDOW_ROUND_W = 10;
 constexpr auto TIMER_WINDOW_ROUND_H = 10;
 
-// ���ڵ�Ԫ�ؼ��
+// 窗口的元素间距
 constexpr auto TIMER_WINDOW_MARGIN = 10;
 
-// ʱ����ʾ������Բ�ǿ��Ⱥ͸߶�
+// 时间显示容器的圆角宽度和高度
 constexpr auto TIMER_DISPLAY_ROUND_W = 10;
 constexpr auto TIMER_DISPLAY_ROUND_H = 10;
 
-// ʱ��ĸ��¶�ʱ��
+// 时间的更新定时器
 constexpr auto DATE_TIMER_ID = 0x0001;
-// �����ĸ��¶�ʱ��
+// 动画的更新定时器
 constexpr auto ANIMATION_TIMER_ID = 0x0002;
 
-// ������ʾʱ��뾶: ��
+// 窗口显示时间半径: 秒
 constexpr auto WINDOWS_SHOW_TIME_RADIUS_SEC = 30;
 
-// �����ĵ��뵭�ٶ�
+// 动画的淡入淡速度
 constexpr auto FADE_DURATION = 5;
 
 int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
 
 
-// �Ʋ���: ����ʱ�䵹��ʱ�����ֶ�����step����������
-// ��Ҫ��������Ŀ��㣬����distance�������Ŀ���ľ���
-// �ִ�Ŀ���󲻻�ֹͣ�����Լ�������step����������
+// 计步器: 并非时间倒计时，由手动调用step步进来计数
+// 需要设置起点和目标点，更具distance来计算和目标点的距离
+// 抵达目标点后不会停止，可以继续调用step来继续步进
 class StepCountDown {
 
 public:

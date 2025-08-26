@@ -20,7 +20,7 @@ namespace Date {
     std::wstring CurrTimeWStr() {
         const auto tm = currTM();
 
-        wchar_t buffer[TIME_FORMAT_LEN()];
+        wchar_t buffer[ TIME_FORMAT_LEN() ];
 
         wcsftime(buffer, TIME_FORMAT_LEN(), TIME_FORMAT, &tm);
         return buffer;
@@ -50,7 +50,7 @@ namespace Date {
 
         const auto now = std::chrono::system_clock::from_time_t(mktime(&tm));
 
-        tm.tm_min+= 2;
+        tm.tm_min += 2;
         tm.tm_sec = 0;
 
         const auto next_hour = std::chrono::system_clock::from_time_t(mktime(&tm));
@@ -60,7 +60,7 @@ namespace Date {
 #endif
 
 #ifdef NDEBUG
-    // ºÍÏÂÒ»¸öÕûµãµÄ¾àÀë:Ãë
+    // å’Œä¸‹ä¸€ä¸ªæ•´ç‚¹çš„è·ç¦»:ç§’
     std::chrono::seconds NextHourDistance() {
         struct tm tm = currTM();
 

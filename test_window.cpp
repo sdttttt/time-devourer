@@ -6,13 +6,13 @@
 #include "digital_font.h"
 #include "date.h"
 
-// ÉèÖÃ´°¿ÚÀà
+// è®¾ç½®çª—å£ç±»
 constexpr auto TEST_CLASS_NAME = L"TestWindowClass";
 
-// ±êÌâÀ¸Ãû
+// æ ‡é¢˜æ å
 constexpr auto TEST_WINDOW_TITLE = L"TEST";
 
-// ´°¿Ú³ß´ç
+// çª—å£å°ºå¯¸
 constexpr auto TEST_WINDOW_WIDTH = 500;
 constexpr auto TEST_WINDOW_HEIGHT = 500;
 
@@ -27,11 +27,11 @@ static LRESULT CALLBACK testWndProc(
 
     switch ( message )
     {
-    
+
     case WM_PAINT: {
         hdc = BeginPaint(hWnd, &ps);
-
-        DigitalFont::DrawClock(hdc, Date::CurrTimeWStr());
+        auto time = Date::CurrTimeWStr();
+        DigitalFont::DrawClock(hdc, time);
 
         EndPaint(hWnd, &ps);
         break;
@@ -80,11 +80,11 @@ static void registerTestClass(_In_ HINSTANCE hInstance) {
 }
 
 /// <summary>
-/// ´´½¨ÉèÖÃ´°¿ÚÀà²¢ÏÔÊ¾´°¿Ú¡£
+/// åˆ›å»ºè®¾ç½®çª—å£ç±»å¹¶æ˜¾ç¤ºçª—å£ã€‚
 /// </summary>
-/// <param name="hInstance">Ó¦ÓÃ³ÌĞòÊµÀıµÄ¾ä±ú¡£</param>
-/// <param name="nCmdShow">´°¿ÚÏÔÊ¾·½Ê½µÄ±êÖ¾¡£</param>
-/// <returns>Èç¹û³É¹¦Ôò·µ»Ø 0£¬Ê§°ÜÔò·µ»Ø 1¡£</returns>
+/// <param name="hInstance">åº”ç”¨ç¨‹åºå®ä¾‹çš„å¥æŸ„ã€‚</param>
+/// <param name="nCmdShow">çª—å£æ˜¾ç¤ºæ–¹å¼çš„æ ‡å¿—ã€‚</param>
+/// <returns>å¦‚æœæˆåŠŸåˆ™è¿”å› 0ï¼Œå¤±è´¥åˆ™è¿”å› 1ã€‚</returns>
 int CreateTestClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
 
     WNDCLASSEX setting_wcex = { sizeof(WNDCLASSEX) };
