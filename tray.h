@@ -2,7 +2,6 @@
 
 #include <windows.h>
 
-
 namespace Tray {
     constexpr auto ICON_ID = 2;
     constexpr auto WM_ICON = WM_USER + 1;

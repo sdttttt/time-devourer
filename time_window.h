@@ -49,7 +49,7 @@ int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
 class StepCountDown {
 
 public:
-    StepCountDown(UINT down, UINT count = 0) : count(count), down(down) {}
+    StepCountDown(long long down, long long count = 0) : count(count), down(down) {}
     StepCountDown(std::chrono::seconds down, std::chrono::seconds count = std::chrono::seconds(0)) : count(count.count()), down(down.count()) {}
 
     StepCountDown() : StepCountDown(0, 0) {};
@@ -58,22 +58,22 @@ public:
         this->count += i;
     }
 
-    UINT distance() const {
+    long long distance() const {
         return abs(static_cast< int >( this->down - this->count ));
     }
 
-    void reset(UINT end, UINT start = 0) {
+    void reset(long long end, long long start = 0) {
         this->count = start;
         this->down = end;
     }
 
-    void reset(std::chrono::seconds end, UINT start = 0) {
+    void reset(std::chrono::seconds end, long long start = 0) {
         this->count = start;
         this->down = end.count();
     }
 
 private:
 
-    UINT count;
-    UINT down;
+    long long count;
+    long long down;
 };

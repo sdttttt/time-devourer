@@ -7,7 +7,7 @@ root = true
 
 # --- 通用设置 ---
 charset = utf-8
-end_of_line = lf
+end_of_line = crlf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
