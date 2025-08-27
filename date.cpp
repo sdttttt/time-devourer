@@ -1,11 +1,9 @@
-
 #include <ctime>
 #include <sstream>
 #include <chrono>
 #include "date.h"
 
 namespace Date {
-
     namespace {
         inline struct tm currTM() {
             const auto now = std::chrono::system_clock::now();
@@ -20,12 +18,11 @@ namespace Date {
     std::wstring CurrTimeWStr() {
         const auto tm = currTM();
 
-        wchar_t buffer[ TIME_FORMAT_LEN() ];
+        wchar_t buffer[TIME_FORMAT_LEN()];
 
         wcsftime(buffer, TIME_FORMAT_LEN(), TIME_FORMAT, &tm);
         return buffer;
     }
-
 
 
     std::chrono::hours CurrTimeHour() {
@@ -55,7 +52,7 @@ namespace Date {
 
         const auto next_hour = std::chrono::system_clock::from_time_t(mktime(&tm));
 
-        return std::chrono::duration_cast< std::chrono::seconds >( next_hour - now );
+        return std::chrono::duration_cast<std::chrono::seconds>(next_hour - now);
     }
 #endif
 
@@ -75,5 +72,4 @@ namespace Date {
         return std::chrono::duration_cast< std::chrono::seconds >( next_hour - now );
     }
 #endif
-
 }

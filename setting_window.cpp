@@ -13,26 +13,25 @@ static LRESULT CALLBACK settingWndProc(
     PAINTSTRUCT ps;
     HDC hdc;
 
-    switch ( message )
-    {
-    case WM_PAINT: {
-        hdc = BeginPaint(hWnd, &ps);
+    switch (message) {
+        case WM_PAINT: {
+            hdc = BeginPaint(hWnd, &ps);
 
-        EndPaint(hWnd, &ps);
-        break;
-    }
+            EndPaint(hWnd, &ps);
+            break;
+        }
 
-    case WM_CLOSE: {
-        DestroyWindow(hWnd);
-        break;
-    }
+        case WM_CLOSE: {
+            DestroyWindow(hWnd);
+            break;
+        }
 
-    case WM_DESTROY: {
-        break;
-    }
+        case WM_DESTROY: {
+            break;
+        }
 
-    default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
     }
 
     return 0;
@@ -50,7 +49,7 @@ static void registerSettingClass(_In_ HINSTANCE hInstance) {
     setting_wcex.hInstance = hInstance;
     setting_wcex.hIcon = LoadIcon(setting_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON));
     setting_wcex.hCursor = LoadCursor(NULL, IDC_ARROW);
-    setting_wcex.hbrBackground = ( HBRUSH ) ( COLOR_WINDOW + 1 );
+    setting_wcex.hbrBackground = (HBRUSH) (COLOR_WINDOW + 1);
     setting_wcex.lpszMenuName = NULL;
     setting_wcex.lpszClassName = TEST_CLASS_NAME;
     setting_wcex.hIconSm = LoadIcon(setting_wcex.hInstance, MAKEINTRESOURCE(IDI_ICON));
@@ -67,9 +66,8 @@ static void registerSettingClass(_In_ HINSTANCE hInstance) {
 /// <param name="nCmdShow">窗口显示方式的标志。</param>
 /// <returns>如果成功则返回 0，失败则返回 1。</returns>
 int CreateSettingClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
-
-    WNDCLASSEX setting_wcex = { sizeof(WNDCLASSEX) };
-    if ( FALSE == GetClassInfoEx(hInstance, TEST_CLASS_NAME, &setting_wcex) ) {
+    WNDCLASSEX setting_wcex = {sizeof(WNDCLASSEX)};
+    if (FALSE == GetClassInfoEx(hInstance, TEST_CLASS_NAME, &setting_wcex)) {
         registerSettingClass(hInstance);
     }
 

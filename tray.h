@@ -11,6 +11,8 @@ namespace Tray {
     constexpr auto TRAY_MENU_TEST = 1080;
 
     void AddIcon(HWND h_wnd);
+
     void RemoveIcon();
+
     void ShowMenu(HWND hWnd);
 };

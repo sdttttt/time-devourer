@@ -47,19 +47,23 @@ int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
 // 需要设置起点和目标点，更具distance来计算和目标点的距离
 // 抵达目标点后不会停止，可以继续调用step来继续步进
 class StepCountDown {
-
 public:
-    StepCountDown(long long down, long long count = 0) : count(count), down(down) {}
-    StepCountDown(std::chrono::seconds down, std::chrono::seconds count = std::chrono::seconds(0)) : count(count.count()), down(down.count()) {}
+    StepCountDown(long long down, long long count = 0) : count(count), down(down) {
+    }
 
-    StepCountDown() : StepCountDown(0, 0) {};
+    StepCountDown(std::chrono::seconds down,
+                  std::chrono::seconds count = std::chrono::seconds(0)) : count(count.count()), down(down.count()) {
+    }
+
+    StepCountDown() : StepCountDown(0, 0) {
+    };
 
     void step(UINT i = 1) {
         this->count += i;
     }
 
     long long distance() const {
-        return abs(static_cast< int >( this->down - this->count ));
+        return abs(static_cast<int>(this->down - this->count));
     }
 
     void reset(long long end, long long start = 0) {
@@ -73,7 +77,6 @@ public:
     }
 
 private:
-
     long long count;
     long long down;
 };

@@ -4,11 +4,9 @@
 #include "resource.h"
 
 namespace Tray {
-
     NOTIFYICONDATA nid;
 
     void AddIcon(HWND h_wnd) {
-
         HICON h_icon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
 
         nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -52,6 +50,4 @@ namespace Tray {
 
         DestroyMenu(h_menu);
     }
-
 };
-

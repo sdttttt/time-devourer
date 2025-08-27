@@ -10,22 +10,21 @@ int WINAPI WinMain(
     _In_ LPSTR lpCmdLine,
     _In_ int nCmdShow
 ) {
-    if ( IsWindows10OrGreater() ) {
+    if (IsWindows10OrGreater()) {
         SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     }
 
     auto ret = CreateTimeClassAndWindow(hInstance, nCmdShow);
-    if ( ret > 0 ) {
+    if (ret > 0) {
         return ret;
     }
 
     MSG msg;
 
-    while ( GetMessage(&msg, NULL, 0, 0) > 0 )
-    {
+    while (GetMessage(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
 
-    return static_cast< int >( msg.wParam );
+    return static_cast<int>(msg.wParam);
 };
