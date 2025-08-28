@@ -9,7 +9,7 @@ namespace Date {
             const auto now = std::chrono::system_clock::now();
             const auto now_t = std::chrono::system_clock::to_time_t(now);
 
-            struct tm tm;
+            struct tm tm{};
             localtime_s(&tm, &now_t);
             return tm;
         }
@@ -26,18 +26,18 @@ namespace Date {
 
 
     std::chrono::hours CurrTimeHour() {
-        auto tm = currTM();
+        const auto tm = currTM();
 
         return std::chrono::hours(tm.tm_hour);
     }
 
     std::chrono::minutes CurrTimeMin() {
-        auto tm = currTM();
+        const auto tm = currTM();
         return std::chrono::minutes(tm.tm_min);
     }
 
     std::chrono::seconds CurrTimeSec() {
-        auto tm = currTM();
+        const auto tm = currTM();
         return std::chrono::seconds(tm.tm_sec);
     }
 

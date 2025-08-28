@@ -48,11 +48,12 @@ int CreateTimeClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow);
 // 抵达目标点后不会停止，可以继续调用step来继续步进
 class StepCountDown {
 public:
-    StepCountDown(long long down, long long count = 0) : count(count), down(down) {
+    explicit StepCountDown(const long long down, const long long count = 0) : count(count), down(down) {
     }
 
-    StepCountDown(std::chrono::seconds down,
-                  std::chrono::seconds count = std::chrono::seconds(0)) : count(count.count()), down(down.count()) {
+    explicit StepCountDown(const std::chrono::seconds down,
+                           const std::chrono::seconds count = std::chrono::seconds(0)) : count(count.count()),
+        down(down.count()) {
     }
 
     StepCountDown() : StepCountDown(0, 0) {
@@ -66,12 +67,13 @@ public:
         return abs(static_cast<int>(this->down - this->count));
     }
 
-    void reset(long long end, long long start = 0) {
+
+    void reset(const long long end, const long long start = 0) {
         this->count = start;
         this->down = end;
     }
 
-    void reset(std::chrono::seconds end, long long start = 0) {
+    void reset(const std::chrono::seconds end, const long long start = 0) {
         this->count = start;
         this->down = end.count();
     }

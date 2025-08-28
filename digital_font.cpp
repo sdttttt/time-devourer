@@ -1,6 +1,6 @@
 #include <windows.h>
 #include <gdiplus.h>
-#include <cmath>
+#include <string_view>
 #include <array>
 #include "gdi_obj.h"
 #include "digital_font.h"
@@ -136,16 +136,16 @@ namespace DigitalFont {
     }
 
     // 绘制时钟
-    void DrawClock(HDC hdc, std::wstring &time_str) {
+    void DrawClock(HDC hdc, const std::wstring_view time_str) {
         if (time_str.empty()) return;
 
         int start_x = PAINT_START_X;
-        int start_y = PAINT_START_Y;
+        constexpr int start_y = PAINT_START_Y;
 
-        for (wchar_t c: time_str) {
+        for (const wchar_t c: time_str) {
             // 数字
             if (c >= L'0' && c <= L'9') {
-                int digit = c - L'0';
+                const int digit = c - L'0';
                 DrawBkDigit(hdc, start_x, start_y, digit);
                 // 每个数码管数字的长度是 SEG_LENGTH + 2*SEG_WIDTH
                 start_x += SEG_LENGTH + 2 * SEG_WIDTH + DIGIT_SPACING;
@@ -153,10 +153,10 @@ namespace DigitalFont {
 
             // 冒号
             if (c == L':') {
-                int colon_y = start_y + (SEG_LENGTH * 2 + SEG_WIDTH * 3) / 2;
+                constexpr int colon_y = start_y + (SEG_LENGTH * 2 + SEG_WIDTH * 3) / 2;
 
                 IGDI::AutoGDI<HBRUSH> brush(CreateSolidBrush(RGB(0, 0, 0)));
-                HBRUSH old_brash = (HBRUSH) SelectObject(hdc, brush);
+                const auto old_brash = static_cast<HBRUSH>(SelectObject(hdc, brush));
 
                 Rectangle(hdc,
                           start_x, colon_y - COLON_SIZE - COLON_OFFSET_Y,

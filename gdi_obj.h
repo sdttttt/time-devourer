@@ -5,24 +5,29 @@
 // 自动包装GDI对象，在对象生命周期结束时自动释放
 namespace IGDI {
     template<typename T>
-    struct is_gdi_type : std::false_type {
+    struct is_gdi_type {
+        static constexpr bool value = false;
     };
 
     template<>
-    struct is_gdi_type<HFONT> : std::true_type {
+    struct is_gdi_type<HFONT> {
+        static constexpr bool value = true;
     };
 
     template<>
-    struct is_gdi_type<HBRUSH> : std::true_type {
+    struct is_gdi_type<HBRUSH> {
+        static constexpr bool value = true;
     };
 
     template<>
-    struct is_gdi_type<HPEN> : std::true_type {
+    struct is_gdi_type<HPEN> {
+        static constexpr bool value = true;
     };
 
     template<typename T>
     class AutoGDI {
-        static_assert(is_gdi_type<T>::value, "T must be a GDI object");
+        static_assert(is_gdi_type<T>::value == true, "T must be a GDI object");
+
         T obj;
 
     public:

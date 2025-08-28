@@ -15,8 +15,7 @@ namespace DigitalFont {
     constexpr auto COLON_GAP = 20; // 冒号之间的间距
     constexpr auto COLON_OFFSET_Y = 8; // 冒号的偏移量
 
-
     void DrawDigit(HDC hdc, int x, int y, int digit);
 
-    void DrawClock(HDC hdc, std::wstring &time_str);
+    void DrawClock(HDC hdc, std::wstring_view time_str);
 }

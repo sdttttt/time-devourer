@@ -25,25 +25,25 @@ struct WindowDisplay {
 };
 
 
-static void Exit(HWND hwnd) {
+static void Exit(const HWND hwnd) {
     KillTimer(hwnd, DATE_TIMER_ID);
     KillTimer(hwnd, ANIMATION_TIMER_ID);
     PostQuitMessage(0);
 }
 
-static void timerWindowFadeIn(HWND hwnd, WindowDisplay &wd) {
+static void timerWindowFadeIn(const HWND hwnd, WindowDisplay &wd) {
     wd.is_show = TRUE;
     wd.fading = TRUE;
-    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // 启动新定时器
+    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, nullptr); // 启动新定时器
 }
 
-static void timerWindowFadeOut(HWND hwnd, WindowDisplay &wd) {
+static void timerWindowFadeOut(const HWND hwnd, WindowDisplay &wd) {
     wd.is_show = FALSE;
     wd.fading = TRUE;
-    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, NULL); // 启动新定时器
+    SetTimer(hwnd, ANIMATION_TIMER_ID, 10, nullptr); // 启动新定时器
 }
 
-static void updateTimerWindowFadeAnimation(HWND hwnd, WindowDisplay &wd) {
+static void updateTimerWindowFadeAnimation(const HWND hwnd, WindowDisplay &wd) {
     // 提醒窗口开始动画
     if (wd.fading && wd.is_show) {
         wd.alpha += FADE_DURATION;
@@ -119,7 +119,7 @@ static LRESULT CALLBACK timeWndProc(
                     g_step_down.reset(Date::NextHourDistance());
                 }
 
-                InvalidateRect(hWnd, NULL, TRUE);
+                InvalidateRect(hWnd, nullptr, TRUE);
             }
 
             if (wParam == ANIMATION_TIMER_ID) {

@@ -5,7 +5,7 @@
 
 
 int WINAPI WinMain(
-    _In_ HINSTANCE hInstance,
+    _In_ const HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPSTR lpCmdLine,
     _In_ int nCmdShow
@@ -14,14 +14,14 @@ int WINAPI WinMain(
         SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
     }
 
-    auto ret = CreateTimeClassAndWindow(hInstance, nCmdShow);
+    const auto ret = CreateTimeClassAndWindow(hInstance, nCmdShow);
     if (ret > 0) {
         return ret;
     }
 
     MSG msg;
 
-    while (GetMessage(&msg, NULL, 0, 0) > 0) {
+    while (GetMessage(&msg, nullptr, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }

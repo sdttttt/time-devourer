@@ -38,7 +38,7 @@ static LRESULT CALLBACK settingWndProc(
 }
 
 
-static void registerSettingClass(_In_ HINSTANCE hInstance) {
+static void registerSettingClass(_In_ const HINSTANCE hInstance) {
     WNDCLASSEX setting_wcex;
 
     setting_wcex.cbSize = sizeof(WNDCLASSEX);
@@ -65,23 +65,24 @@ static void registerSettingClass(_In_ HINSTANCE hInstance) {
 /// <param name="hInstance">应用程序实例的句柄。</param>
 /// <param name="nCmdShow">窗口显示方式的标志。</param>
 /// <returns>如果成功则返回 0，失败则返回 1。</returns>
-int CreateSettingClassAndWindow(_In_ HINSTANCE hInstance, _In_ int nCmdShow) {
+int CreateSettingClassAndWindow(_In_ HINSTANCE hInstance, _In_ const int nCmdShow) {
     WNDCLASSEX setting_wcex = {sizeof(WNDCLASSEX)};
     if (FALSE == GetClassInfoEx(hInstance, TEST_CLASS_NAME, &setting_wcex)) {
         registerSettingClass(hInstance);
     }
 
-    HWND setting_hwnd = CreateWindowEx(
+
+    const HWND setting_hwnd = CreateWindowEx(
         0,
         TEST_CLASS_NAME,
         TEST_WINDOW_TITLE,
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
         TEST_WINDOW_WIDTH, TEST_WINDOW_HEIGHT,
-        NULL,
-        NULL,
+        nullptr,
+        nullptr,
         hInstance,
-        NULL
+        nullptr
     );
     Debug::TryLastErrorMessageBox();
 
