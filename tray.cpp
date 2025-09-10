@@ -3,10 +3,12 @@
 #include "tray.h"
 #include "resource.h"
 
-namespace Tray {
+namespace Tray
+{
     NOTIFYICONDATA nid;
 
-    void AddIcon(HWND h_wnd) {
+    void AddIcon(HWND h_wnd)
+    {
         HICON h_icon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON));
 
         nid.cbSize = sizeof(NOTIFYICONDATA);
@@ -19,11 +21,13 @@ namespace Tray {
         Shell_NotifyIcon(NIM_ADD, &nid);
     }
 
-    void RemoveIcon() {
+    void RemoveIcon()
+    {
         Shell_NotifyIcon(NIM_DELETE, &nid);
     }
 
-    void ShowMenu(HWND hWnd) {
+    void ShowMenu(HWND hWnd)
+    {
         POINT pt;
         GetCursorPos(&pt);
 
@@ -35,6 +39,7 @@ namespace Tray {
 #endif
         // TODO: 暂时禁用设置菜单，没啥好用的
         AppendMenu(h_menu, MF_GRAYED, TRAY_MENU_SETTING, L"Setting");
+        AppendMenu(h_menu, MF_CHECKED, TRAY_MENU_STARTUP, L"Startup");
         AppendMenu(h_menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
 
         // 激活前台窗口

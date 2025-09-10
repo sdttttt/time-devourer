@@ -1,7 +1,5 @@
 #pragma once
 
-#include <windows.h>
-#include <sstream>
 
 namespace DigitalFont {
     constexpr auto SEG_WIDTH = 4; // 数码管段的宽度

@@ -1,4 +1,4 @@
-#include <windows.h>
+#include "common.h"
 #include "tray.h"
 #include "date.h"
 #include "font.h"
@@ -9,7 +9,6 @@
 #include "test_window.h"
 #include "gdi_obj.h"
 #include "digital_font.h"
-#include "common.h"
 
 using namespace std::chrono;
 

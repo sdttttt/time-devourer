@@ -1,8 +1,5 @@
-#include <windows.h>
-#include "setting_window.h"
-#include "resource.h"
 #include "common.h"
-
+#include "setting_window.h"
 
 static LRESULT CALLBACK settingWndProc(
     _In_ HWND hWnd,
@@ -70,7 +67,6 @@ int CreateSettingClassAndWindow(_In_ HINSTANCE hInstance, _In_ const int nCmdSho
     if (FALSE == GetClassInfoEx(hInstance, TEST_CLASS_NAME, &setting_wcex)) {
         registerSettingClass(hInstance);
     }
-
 
     const HWND setting_hwnd = CreateWindowEx(
         0,

@@ -1,7 +1,5 @@
-#include <windows.h>
+#include "common.h"
 #include <gdiplus.h>
-#include <string_view>
-#include <array>
 #include "gdi_obj.h"
 #include "digital_font.h"
 #include "date.h"

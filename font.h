@@ -1,7 +1,6 @@
 #pragma once
 
-#include <windows.h>
-#include <string>
+#include "common.h"
 
 constexpr auto FONT_FAMILY = L"Arial";
 

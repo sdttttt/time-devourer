@@ -1,6 +1,4 @@
-#include <ctime>
-#include <sstream>
-#include <chrono>
+#include "common.h"
 #include "date.h"
 
 namespace Date {

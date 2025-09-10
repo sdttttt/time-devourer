@@ -1,6 +1,4 @@
-#include <windows.h>
-#include <string>
-#include <unordered_map>
+#include "common.h"
 #include <tchar.h>
 #include "font.h"
 #include "gdi_obj.h"

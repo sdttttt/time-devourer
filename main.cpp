@@ -1,7 +1,6 @@
-#include <windows.h>
+#include "common.h"
 #include <VersionHelpers.h>
 #include "time_window.h"
-#include "setting_window.h"
 
 
 int WINAPI WinMain(

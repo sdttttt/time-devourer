@@ -1,6 +1,6 @@
 #pragma once
 
-#include <windows.h>
+#include "common.h"
 #include <chrono>
 
 // 时间显示窗口类

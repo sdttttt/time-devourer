@@ -1,6 +1,5 @@
 #pragma once
-#include <windows.h>
-#include <type_traits>
+#include "common.h"
 
 // 自动包装GDI对象，在对象生命周期结束时自动释放
 namespace IGDI {

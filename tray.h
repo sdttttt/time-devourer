@@ -7,6 +7,7 @@ namespace Tray {
     constexpr auto WM_ICON = WM_USER + 1;
     constexpr auto TRAY_MENU_EXIT = 1001;
     constexpr auto TRAY_MENU_SETTING = 1002;
+    constexpr auto TRAY_MENU_STARTUP = 1003;
 
     constexpr auto TRAY_MENU_TEST = 1080;
 
