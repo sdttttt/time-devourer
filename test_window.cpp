@@ -1,4 +1,3 @@
-#include <windows.h>
 #include "resource.h"
 #include "common.h"
 #include "digital_font.h"

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <windows.h>
-
 // 设置窗口类
 constexpr auto TEST_CLASS_NAME = L"SettingWindowClass";
 

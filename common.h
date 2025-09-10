@@ -1,10 +1,5 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include<algorithm>
-#include <array>
-#include <windows.h>
 #include "resource.h"
 
 // 计划任务的任务路径
