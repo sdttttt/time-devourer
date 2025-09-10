@@ -3,3 +3,6 @@
  - 致命错误
  - UI错误
  - 进程装死
+
+
+<img width="513" height="184" alt="圖片" src="https://github.com/user-attachments/assets/cb252d64-d6b8-45e0-9171-055de8e261a9" />
