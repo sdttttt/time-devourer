@@ -6,27 +6,24 @@
 #include "task_sched.h"
 #include <atlbase.h>
 
-// 错误处理宏: 如果有错误就报告加退出跳转
-#define DownIfErr(x, s, ...)        \
-    do {                            \
-        if (FAILED(x))              \
-        {                           \
-            Debug::ReportError(s);  \
-            goto DOWN;              \
-        }                           \
-    } while (0);
+template<typename F>
+BOOL TryInvoke(F&& func, LPCWSTR msg)
+{
+    if (auto hr = func(); FAILED(hr))
+    {
+        Debug::ReportError(msg);
+        return hr;
+    }
 
-// 错误处理宏: 报告错误加退出跳转
-#define DownWithErr(s)         \
-    do {                       \
-        Debug::ReportError(s); \
-        goto DOWN;             \
-    } while (0)
+    return S_OK;
+}
 
-// 退出宏
-#define DownOk() \
-    goto DOWN;
+// 尝试执行一个步骤
+#define TryStep(func, msg) \
+    do { auto r = TryInvoke([&] { return func; }, msg); if (r) { return FALSE; } } while (0);
 
+#define ErrThrow(msg) \
+    do { TryInvoke([&] { return E_FAIL; }, msg); return FALSE; } while (0);
 
 /**
  *
@@ -64,11 +61,11 @@ BOOL CreateStartupTask()
     const auto userdomain_len = GetEnvironmentVariable(ENV_USERDOMAIN, username_domain.data(), USERNAME_DOMAIN_LEN);
     if (0 == username_len)
     {
-        DownWithErr(L"环境变量:USERNAME获取失败");
+        ErrThrow(L"环境变量:USERNAME获取失败");
     }
     if (0 == userdomain_len)
     {
-        DownWithErr(L"环境变量:USERDOMAIN获取失败");
+        ErrThrow(L"环境变量:USERDOMAIN获取失败");
     }
 
     username_domain += L"\\";
@@ -77,26 +74,23 @@ BOOL CreateStartupTask()
     task_name += L"timer-";
     task_name += username;
 
-
-    hr = com_scope.init();
-    DownIfErr(hr, L"COM组件:初始化错误");
+    TryStep(com_scope.init(), L"COM组件:初始化错误");
 
 
-    hr = CoCreateInstance(
+    TryStep(CoCreateInstance(
         __uuidof(TaskScheduler),
         nullptr,
         CLSCTX_INPROC_SERVER,
         __uuidof(ITaskService),
-        reinterpret_cast<void**>(p_service.AsOutPtr())
-    );
-    DownIfErr(hr, L"COM组件TaskScheduler:创建失败");
+        reinterpret_cast<void**>(p_service.AsOutPtr()))
+        , L"COM组件TaskScheduler:创建失败");
 
-    hr = p_service->Connect(
+    TryStep(p_service->Connect(
         _variant_t(),
         _variant_t(),
         _variant_t(),
-        _variant_t());
-    DownIfErr(hr, L"TaskScheduler:连接失败");
+        _variant_t())
+        , L"TaskScheduler:连接失败");
 
     // 尝试获取任务目录
     hr = p_service->GetFolder(_bstr_t(TASK_SCHED_FOLDER), p_folder.AsOutPtr());
@@ -107,13 +101,13 @@ BOOL CreateStartupTask()
         hr = p_service->GetFolder(
             _bstr_t(TASK_SCHED_ROOT),
             p_root_folder.AsOutPtr());
-        DownIfErr(hr, L"TaskScheduler:获取根目录失败");
+        TryStep(hr, L"TaskScheduler:获取根目录失败");
 
         hr = p_root_folder->CreateFolder(
             _bstr_t(TASK_SCHED_FOLDER),
             _variant_t(),
             p_folder.AsOutPtr());
-        DownIfErr(hr, L"TaskScheduler:根目录创建目录失败");
+        TryStep(hr, L"TaskScheduler:根目录创建目录失败");
     }
 
     // 尝试启动任务
@@ -123,60 +117,60 @@ BOOL CreateStartupTask()
         hr = p_reg_task->put_Enabled(VARIANT_TRUE);
         if (SUCCEEDED(hr))
         {
-            DownOk();
+            return TRUE;
         }
     }
 
     hr = p_service->NewTask(0, p_task_def.AsOutPtr());
-    DownIfErr(hr, L"创建任务错误");
+    TryStep(hr, L"创建任务错误");
 
     hr = p_task_def->get_RegistrationInfo(p_reg_info.AsOutPtr());
-    DownIfErr(hr, L"创建任务:注册信息获取失败")
+    TryStep(hr, L"创建任务:注册信息获取失败")
 
     hr = p_reg_info->put_Author(_bstr_t(username_domain.c_str()));
-    DownIfErr(hr, L"创建任务:put_Author发生错误")
+    TryStep(hr, L"创建任务:put_Author发生错误")
 
     hr = p_task_def->get_Settings(p_task_settings.AsOutPtr());
-    DownIfErr(hr, L"创建任务:get_Settings发生错误");
+    TryStep(hr, L"创建任务:get_Settings发生错误");
 
     // 获取或设置一个布尔值，该值指示任务计划程序可以在其计划时间过后随时启动任务。
     hr = p_task_settings->put_StartWhenAvailable(VARIANT_FALSE);
-    DownIfErr(hr, L"任务设置:put_StartWhenAvailable发生错误");
+    TryStep(hr, L"任务设置:put_StartWhenAvailable发生错误");
 
     // 获取或设置一个布尔值，该值指示在计算机使用电池时任务将停止。
     hr = p_task_settings->put_StopIfGoingOnBatteries(VARIANT_FALSE);
-    DownIfErr(hr, L"任务设置:put_StopIfGoingOnBatteries发生错误");
+    TryStep(hr, L"任务设置:put_StopIfGoingOnBatteries发生错误");
 
     // 获取或设置完成任务所允许的时间量。 默认情况下，任务将在开始运行 72 小时后停止。 可以通过更改此设置来更改此设置。
     hr = p_task_settings->put_ExecutionTimeLimit(_bstr_t(L"PT05S")); //Unlimited
-    DownIfErr(hr, L"任务设置:put_ExecutionTimeLimit发生错误");
+    TryStep(hr, L"任务设置:put_ExecutionTimeLimit发生错误");
 
     // 获取或设置一个布尔值，该值指示如果计算机使用电池运行，则不会启动任务
     hr = p_task_settings->put_DisallowStartIfOnBatteries(VARIANT_FALSE);
-    DownIfErr(hr, L"任务设置:put_DisallowStartIfOnBatteries发生错误");
+    TryStep(hr, L"任务设置:put_DisallowStartIfOnBatteries发生错误");
 
 
     hr = p_task_def->get_Triggers(p_trigger_collect.AsOutPtr());
-    DownIfErr(hr, L"任务触发器Collection获取失败");
+    TryStep(hr, L"任务触发器Collection获取失败");
 
 
     COMPtr<ITrigger> p_trigger(nullptr);
     COMPtr<ILogonTrigger> p_toggle(nullptr);
     // 用户登陆时触发
     hr = p_trigger_collect->Create(TASK_TRIGGER_LOGON, p_trigger.AsOutPtr());
-    DownIfErr(hr, L"触发器创建失败");
+    TryStep(hr, L"触发器创建失败");
 
     hr = p_trigger->QueryInterface(__uuidof(ILogonTrigger), p_toggle.AsOutVoidPtr());
-    DownIfErr(hr, L"QueryInterface触发器获取失败")
+    TryStep(hr, L"QueryInterface触发器获取失败")
 
     hr = p_toggle->put_Id(_bstr_t(L"T1"));
-    DownIfErr(hr, L"ID设置失败");
+    TryStep(hr, L"ID设置失败");
 
     hr = p_toggle->put_Delay(_bstr_t(DELAY_STARTUP));
-    DownIfErr(hr, L"延时设置失败");
+    TryStep(hr, L"延时设置失败");
 
     hr = p_toggle->put_UserId(_bstr_t(username_domain.c_str()));
-    DownIfErr(hr, L"设置触发器用户ID错误");
+    TryStep(hr, L"设置触发器用户ID错误");
 
 
     COMPtr<IActionCollection> p_action_collect(nullptr);
@@ -185,37 +179,37 @@ BOOL CreateStartupTask()
 
     // Get the task action collection pointer.
     hr = p_task_def->get_Actions(p_action_collect.AsOutPtr());
-    DownIfErr(hr, L"无法创建IActionCollection");
+    TryStep(hr, L"无法创建IActionCollection");
 
     // Create the action, specifying that it is an executable action.
     hr = p_action_collect->Create(TASK_ACTION_EXEC, p_act.AsOutPtr());
 
-    DownIfErr(hr, L"无法创建Action");
+    TryStep(hr, L"无法创建Action");
     // QI for the executable task pointer.
     hr = p_act->QueryInterface(
         __uuidof(IExecAction), p_exec_act.AsOutVoidPtr());
-    DownIfErr(hr, L"获取IExecAction失败");
+    TryStep(hr, L"获取IExecAction失败");
 
     // Set the path of the executable to TrafficMonitor (passed as CustomActionData).
     hr = p_exec_act->put_Path(_bstr_t(self_exec_path.c_str()));
-    DownIfErr(hr, L"设置执行路径失败");
+    TryStep(hr, L"设置执行路径失败");
 
 
     COMPtr<IPrincipal> p_principal(nullptr);
     hr = p_task_def->get_Principal(p_principal.AsOutPtr());
-    DownIfErr(hr, L"获取Principal失败");
+    TryStep(hr, L"获取Principal失败");
 
     hr = p_principal->put_Id(_bstr_t(L"P1"));
-    DownIfErr(hr, L"Principal ID失败");
+    TryStep(hr, L"Principal ID失败");
     // 指定帐户时，请记得在代码中正确使用双反斜杠来指定域和用户名。 例如，使用 DOMAIN\UserName 为 UserId 属性指定值。
     hr = p_principal->put_UserId(_bstr_t(username_domain.c_str()));
-    DownIfErr(hr, L"Principal put_UserId失败");
+    TryStep(hr, L"Principal put_UserId失败");
     hr = p_principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
-    DownIfErr(hr, L"获取Principal LogonType失败");
+    TryStep(hr, L"获取Principal LogonType失败");
 
     // 最低权限运行
     hr = p_principal->put_RunLevel(_TASK_RUNLEVEL::TASK_RUNLEVEL_LUA);
-    DownIfErr(hr, L"put_RunLevel失败");
+    TryStep(hr, L"put_RunLevel失败");
 
 
     hr = p_folder->RegisterTaskDefinition(
@@ -228,10 +222,7 @@ BOOL CreateStartupTask()
         _variant_t(),
         p_reg_task.AsOutPtr()
     );
-    DownIfErr(hr, L"RegisterTaskDefinition失败");
-
-DOWN:
-
+    TryStep(hr, L"RegisterTaskDefinition失败");
 
     return SUCCEEDED(hr);
 }
