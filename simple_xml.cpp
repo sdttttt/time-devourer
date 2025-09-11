@@ -23,7 +23,7 @@ std::wstring UTF82UTF16(const std::string& str)
         return L"";
     }
 
-    size_t size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), str.size(), nullptr, 0);
+    auto size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), nullptr, 0);
 
     if (size_needed <= 0)
     {
@@ -31,7 +31,7 @@ std::wstring UTF82UTF16(const std::string& str)
     }
 
     std::wstring ret(size_needed, 0);
-    MultiByteToWideChar(CP_UTF8, 0, str.data(), str.size(), ret.data(), size_needed);
+    MultiByteToWideChar(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), ret.data(), size_needed);
     return ret;
 }
 

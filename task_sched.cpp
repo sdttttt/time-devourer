@@ -23,12 +23,17 @@ BOOL TryInvoke(F&& func, LPCWSTR msg)
     return S_OK;
 }
 
-// 尝试执行一个步骤
+// 尝试执行一个步骤，如果错误就抛出
 #define TryStep(func, msg) \
     do { auto r = TryInvoke([&] { return func; }, msg); if (r) { return FALSE; } } while (0);
 
+// 不执行func, 直接抛出错误
 #define ErrThrow(msg) \
     do { TryInvoke([&] { return E_FAIL; }, msg); return FALSE; } while (0);
+
+// 预期中的错误, 不抛出错误，直接return一个返回值
+#define ExpectedErr(func, ret) \
+    do { if (FAILED(func)) { return ret; } } while (0);
 
 
 std::wstring defaultTaskName()
@@ -286,11 +291,8 @@ namespace TaskSched
         TryStep(hr, L"COM组件:连接ITaskService失败");
 
         hr = p_service->GetFolder(CComBSTR(TASK_SCHED_FOLDER), p_task_folder.AsOutPtr());
-        if (FAILED(hr))
-        {
-            // 断言文件夹不存在，不需要删除任务
-            return TRUE;
-        }
+        // 尝试删除一个不存在文件夹，失败是预期
+        ExpectedErr(hr, TRUE);
 
         {
             COMPtr<IRegisteredTask> p_exist_reg_task(nullptr);
@@ -326,17 +328,14 @@ namespace TaskSched
                     p_service.AsOutVoidPtr())
                 , L"COM组件TaskScheduler:创建失败");
 
-        // Connect to the task service.
         hr = p_service->Connect(_variant_t(), _variant_t(), _variant_t(), _variant_t());
         TryStep(hr, L"COM组件:连接ITaskService失败");
 
-        // ------------------------------------------------------
-        // Get the TrafficMonitor task folder.
         hr = p_service->GetFolder(CComBSTR(TASK_SCHED_FOLDER), p_task_folder.AsOutPtr());
-        TryStep(hr, L"COM组件:获取ITaskFolder失败");
+        // TryStep(hr, L"COM组件:获取ITaskFolder失败");
+        // 默认情况任务未创建：GetFolder 失败是预期行为
+        ExpectedErr(hr, TRUE);
 
-        // ------------------------------------------------------
-        // If the task exists, disable.
         {
             COMPtr<IRegisteredTask> p_exist_reg_task(nullptr);
             hr = p_task_folder->GetTask(CComBSTR(wstrTaskName.c_str()), p_exist_reg_task.AsOutPtr());
