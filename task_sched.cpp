@@ -25,6 +25,28 @@ BOOL TryInvoke(F&& func, LPCWSTR msg)
 #define ErrThrow(msg) \
     do { TryInvoke([&] { return E_FAIL; }, msg); return FALSE; } while (0);
 
+
+std::wstring defaultTaskName()
+{
+    // 获取所需缓冲区大小
+    const auto required_size = GetEnvironmentVariableW(L"USERNAME", nullptr, 0);
+    if (required_size == 0) {
+        return L"timer-devourer-unknown";
+    }
+
+    std::wstring username(required_size, L'\0');
+
+    const auto copied = GetEnvironmentVariableW(L"USERNAME", username.data(), required_size);
+    if (copied == 0 || copied >= required_size) {
+        return L"timer-devourer-unknown";
+    }
+
+    // 调整大小（copied 是实际字符数）
+    username.resize(copied);
+
+    return L"timer-devourer-" + username;
+}
+
 /**
  *
  * @return BOOL
@@ -34,7 +56,7 @@ BOOL CreateStartupTask()
     // 错误位标志
     auto hr = S_OK;
 
-    std::wstring task_name;
+    std::wstring task_name = defaultTaskName();
 
     std::wstring username_domain;
     username_domain.resize(USERNAME_DOMAIN_LEN);
@@ -68,11 +90,11 @@ BOOL CreateStartupTask()
         ErrThrow(L"环境变量:USERDOMAIN获取失败");
     }
 
+    username.resize(username_len);
+    username_domain.resize(userdomain_len);
+
     username_domain += L"\\";
     username_domain += username;
-
-    task_name += L"timer-";
-    task_name += username;
 
     TryStep(com_scope.init(), L"COM组件:初始化错误");
 
@@ -225,4 +247,118 @@ BOOL CreateStartupTask()
     TryStep(hr, L"RegisterTaskDefinition失败");
 
     return SUCCEEDED(hr);
+}
+
+
+BOOL DeleteStartupTask()
+{
+    HRESULT hr = S_OK;
+
+    WCHAR username[USERNAME_LEN];
+    std::wstring task_name = defaultTaskName();
+
+    COMScope com_scope;
+    COMPtr<ITaskService> p_service(nullptr);
+    COMPtr<ITaskFolder> p_task_folder(nullptr);
+
+
+    TryStep(com_scope.init(), L"COM组件:初始化错误");
+
+    TryStep(CoCreateInstance(
+            __uuidof(TaskScheduler),
+            nullptr,
+            CLSCTX_INPROC_SERVER,
+            __uuidof(ITaskService),
+            reinterpret_cast<void**>(p_service.AsOutPtr()))
+            , L"COM组件TaskScheduler:创建失败");
+    TryStep(hr , L"COM组件:创建ITaskService失败");
+
+    hr = p_service->Connect(_variant_t(), _variant_t(), _variant_t(), _variant_t());
+    TryStep(hr, L"COM组件:连接ITaskService失败");
+
+    hr = p_service->GetFolder(_bstr_t(TASK_SCHED_FOLDER), p_task_folder.AsOutPtr());
+    if (FAILED(hr))
+    {
+        // 断言文件夹不存在，不需要删除任务
+        return TRUE;
+    }
+
+    {
+        COMPtr<IRegisteredTask> p_exist_reg_task(nullptr);
+        hr = p_task_folder->GetTask(_bstr_t(task_name.c_str()), p_exist_reg_task.AsOutPtr());
+        if (SUCCEEDED(hr))
+        {
+            hr = p_task_folder->DeleteTask(_bstr_t(task_name.c_str()), 0);
+        }
+    }
+
+    return (SUCCEEDED(hr));
+}
+
+
+BOOL IsActiveStartupTask(std::wstring* path)
+{
+    HRESULT hr = S_OK;
+
+    std::wstring wstrTaskName = defaultTaskName();
+
+    COMScope com_scope;
+    COMPtr<ITaskService> p_service(nullptr);
+    COMPtr<ITaskFolder> p_task_folder(nullptr);
+
+    BOOL command_path_match = FALSE;
+
+    TryStep(com_scope.init(), L"COM组件:初始化错误");
+    TryStep(CoCreateInstance(
+            __uuidof(TaskScheduler),
+            nullptr,
+            CLSCTX_INPROC_SERVER,
+            __uuidof(ITaskService),
+            p_service.AsOutVoidPtr())
+            , L"COM组件TaskScheduler:创建失败");
+
+    // Connect to the task service.
+    hr = p_service->Connect(_variant_t(), _variant_t(), _variant_t(), _variant_t());
+    TryStep(hr, L"COM组件:连接ITaskService失败");
+
+    // ------------------------------------------------------
+    // Get the TrafficMonitor task folder.
+    hr = p_service->GetFolder(_bstr_t(TASK_SCHED_FOLDER), p_task_folder.AsOutPtr());
+    TryStep(hr, L"COM组件:获取ITaskFolder失败");
+
+    // ------------------------------------------------------
+    // If the task exists, disable.
+    {
+        COMPtr<IRegisteredTask> p_exist_reg_task(nullptr);
+        hr = p_task_folder->GetTask(_bstr_t(wstrTaskName.c_str()), p_exist_reg_task.AsOutPtr());
+        if (SUCCEEDED(hr))
+        {
+            VARIANT_BOOL is_enabled;
+            hr = p_exist_reg_task->get_Enabled(&is_enabled);
+            //判断已存在的任务计划命令的exe文件路径是否为当前exe的路径
+            CComBSTR xml_buff{};
+            p_exist_reg_task->get_Xml(&xml_buff);
+            CSimpleXML xml;
+            xml.LoadXMLContentDirect(std::wstring(xml_buff));
+            // 获得配置中的执行路径
+            std::wstring command_path = xml.GetNode(L"Command", L"Exec");
+            if (path != nullptr)
+            {
+                *path = command_path;
+            }
+            // 获得当前exe的路径
+            std::wstring exec_path;
+            exec_path.resize(MAX_PATH);
+            GetModuleFileName(NULL, exec_path.data(), MAX_PATH);
+            command_path_match = (command_path == exec_path);
+            SysFreeString(xml_buff);
+            if (SUCCEEDED(hr))
+            {
+                // Got the value. Return it.
+                hr = (is_enabled == VARIANT_TRUE) ? S_OK : E_FAIL; // Fake success or fail to return the value.
+            }
+        }
+    }
+
+    return (SUCCEEDED(hr) && command_path_match);
 }

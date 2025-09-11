@@ -7,6 +7,7 @@
 #include <comdef.h>
 #include <Lmcons.h>
 #include <type_traits>
+#include "simple_xml.h"
 
 
 constexpr auto ENV_USERNAME = L"USERNAME";
@@ -25,6 +26,8 @@ namespace TaskSched
 
 
 /**
+ * //--------------------- 后面发现官方有自动包装的CComPtr，努力全部木大
+ *
  * 自动包装COM对象指针，生命周期结束自动调用Release
  * 要求T必须能调用Release方法，且T必须是IUnknown的子类
  *
