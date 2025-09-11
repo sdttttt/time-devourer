@@ -1,6 +1,7 @@
 #pragma once
 
-#include <windows.h>
+#include "task_sched.h"
+#include "resource.h"
 
 namespace Tray {
     constexpr auto ICON_ID = 2;

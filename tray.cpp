@@ -1,7 +1,6 @@
 #include <windows.h>
 
 #include "tray.h"
-#include "resource.h"
 
 namespace Tray
 {
@@ -34,12 +33,15 @@ namespace Tray
         // 创建弹出菜单
         HMENU h_menu = CreatePopupMenu();
 
+        std::wstring current_exec_path;
+        auto is_active_startup = TaskSched::IsActiveStartupTask(&current_exec_path);
+
 #ifdef  _DEBUG
         AppendMenu(h_menu, MF_STRING, TRAY_MENU_TEST, L"TEST");
 #endif
         // TODO: 暂时禁用设置菜单，没啥好用的
-        AppendMenu(h_menu, MF_GRAYED, TRAY_MENU_SETTING, L"Setting");
-        AppendMenu(h_menu, MF_CHECKED, TRAY_MENU_STARTUP, L"Startup");
+        // AppendMenu(h_menu, MF_GRAYED, TRAY_MENU_SETTING, L"Setting");
+        AppendMenu(h_menu, is_active_startup ? MF_CHECKED : MF_UNCHECKED, TRAY_MENU_STARTUP, L"Startup");
         AppendMenu(h_menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
 
         // 激活前台窗口

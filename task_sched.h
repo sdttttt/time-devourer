@@ -3,11 +3,7 @@
 //
 #pragma once
 
-#include <taskschd.h>
-#include <comdef.h>
 #include <Lmcons.h>
-#include <type_traits>
-#include "simple_xml.h"
 
 
 constexpr auto ENV_USERNAME = L"USERNAME";
@@ -22,6 +18,22 @@ constexpr auto USERNAME_LEN = UNLEN + 1; // User Name + '\0'
 
 namespace TaskSched
 {
+    /**
+     * 创建开机计划任务
+     * @return
+     */
+    BOOL CreateStartupTask();
+    /**
+     * 删除开机计划任务
+     * @return
+     */
+    BOOL DeleteStartupTask();
+    /**
+     * 检查任务是否存在
+     * @param path
+     * @return
+     */
+    BOOL IsActiveStartupTask(std::wstring* path);
 };
 
 

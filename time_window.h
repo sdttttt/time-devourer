@@ -1,7 +1,9 @@
 #pragma once
 
-#include "common.h"
 #include <chrono>
+#include "common.h"
+#include "tray.h"
+
 
 // 时间显示窗口类
 constexpr auto TIMER_CLASS_NAME = L"TimeWindowClass";
