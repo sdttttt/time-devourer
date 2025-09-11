@@ -13,6 +13,8 @@ constexpr auto ENV_USERNAME = L"USERNAME";
 constexpr auto ENV_USERDOMAIN = L"USERDOMAIN";
 constexpr auto DELAY_STARTUP = L"PT05S"; // 延时5秒启动
 
+constexpr auto SDDL_FULL_ACCESS_FOR_EVERYONE = L"D:(A;;FA;;;WD)";
+
 
 constexpr auto USERNAME_DOMAIN_LEN = DNLEN + 2; // Domain Name + '\' + User Name + '\0'
 constexpr auto USERNAME_LEN = UNLEN + 1; // User Name + '\0'
@@ -111,3 +113,34 @@ public:
     }
 };
 
+/**
+ * 自动释放COM
+ */
+class COMScope
+{
+    BOOL b_init = FALSE;
+public:
+    COMScope() = default;
+    ~COMScope()
+    {
+        if (b_init)
+        {
+            CoUninitialize();
+        }
+    }
+
+    HRESULT init()
+    {
+        if (b_init)
+        {
+            return S_OK;
+        }
+
+        auto hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+        if (SUCCEEDED(hr))
+        {
+            b_init = TRUE;
+        }
+        return hr;
+    }
+};

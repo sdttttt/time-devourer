@@ -8,27 +8,34 @@
 
 // 错误处理宏: 如果有错误就报告加退出跳转
 #define DownIfErr(x, s, ...)        \
-    if (FAILED(x))                  \
-    {                               \
-        Debug::ReportError(s);      \
-        goto DOWN;                  \
-    }
+    do {                            \
+        if (FAILED(x))              \
+        {                           \
+            Debug::ReportError(s);  \
+            goto DOWN;              \
+        }                           \
+    } while (0);
 
 // 错误处理宏: 报告错误加退出跳转
-#define DownWithErr(s)     \
-    Debug::ReportError(s); \
-    goto DOWN;
+#define DownWithErr(s)         \
+    do {                       \
+        Debug::ReportError(s); \
+        goto DOWN;             \
+    } while (0)
 
 // 退出宏
 #define DownOk() \
     goto DOWN;
 
 
-void CreateStartupTask()
+/**
+ *
+ * @return BOOL
+ */
+BOOL CreateStartupTask()
 {
     // 错误位标志
     auto hr = S_OK;
-
 
     std::wstring task_name;
 
@@ -43,6 +50,7 @@ void CreateStartupTask()
     self_exec_path.resize(MAX_PATH);
     GetModuleFileName(NULL, self_exec_path.data(), MAX_PATH);
 
+    COMScope com_scope;
     COMPtr<ITaskService> p_service(nullptr);
     COMPtr<ITaskFolder> p_folder(nullptr);
     COMPtr<ITaskFolder> p_root_folder(nullptr);
@@ -52,11 +60,13 @@ void CreateStartupTask()
     COMPtr<ITaskSettings> p_task_settings(nullptr);
     COMPtr<ITriggerCollection> p_trigger_collect(nullptr);
 
-    if (0 == GetEnvironmentVariable(ENV_USERNAME, username.data(), USERNAME_LEN))
+    const auto username_len = GetEnvironmentVariable(ENV_USERNAME, username.data(), USERNAME_LEN);
+    const auto userdomain_len = GetEnvironmentVariable(ENV_USERDOMAIN, username_domain.data(), USERNAME_DOMAIN_LEN);
+    if (0 == username_len)
     {
         DownWithErr(L"环境变量:USERNAME获取失败");
     }
-    if (0 == GetEnvironmentVariable(ENV_USERDOMAIN, username_domain.data(), USERNAME_DOMAIN_LEN))
+    if (0 == userdomain_len)
     {
         DownWithErr(L"环境变量:USERDOMAIN获取失败");
     }
@@ -67,8 +77,10 @@ void CreateStartupTask()
     task_name += L"timer-";
     task_name += username;
 
-    hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+
+    hr = com_scope.init();
     DownIfErr(hr, L"COM组件:初始化错误");
+
 
     hr = CoCreateInstance(
         __uuidof(TaskScheduler),
@@ -115,8 +127,6 @@ void CreateStartupTask()
         }
     }
 
-
-
     hr = p_service->NewTask(0, p_task_def.AsOutPtr());
     DownIfErr(hr, L"创建任务错误");
 
@@ -138,7 +148,7 @@ void CreateStartupTask()
     DownIfErr(hr, L"任务设置:put_StopIfGoingOnBatteries发生错误");
 
     // 获取或设置完成任务所允许的时间量。 默认情况下，任务将在开始运行 72 小时后停止。 可以通过更改此设置来更改此设置。
-    hr = p_task_settings->put_ExecutionTimeLimit(_bstr_t(L"PT0S")); //Unlimited
+    hr = p_task_settings->put_ExecutionTimeLimit(_bstr_t(L"PT05S")); //Unlimited
     DownIfErr(hr, L"任务设置:put_ExecutionTimeLimit发生错误");
 
     // 获取或设置一个布尔值，该值指示如果计算机使用电池运行，则不会启动任务
@@ -197,13 +207,31 @@ void CreateStartupTask()
 
     hr = p_principal->put_Id(_bstr_t(L"P1"));
     DownIfErr(hr, L"Principal ID失败");
+    // 指定帐户时，请记得在代码中正确使用双反斜杠来指定域和用户名。 例如，使用 DOMAIN\UserName 为 UserId 属性指定值。
     hr = p_principal->put_UserId(_bstr_t(username_domain.c_str()));
     DownIfErr(hr, L"Principal put_UserId失败");
     hr = p_principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
     DownIfErr(hr, L"获取Principal LogonType失败");
 
+    // 最低权限运行
+    hr = p_principal->put_RunLevel(_TASK_RUNLEVEL::TASK_RUNLEVEL_LUA);
+    DownIfErr(hr, L"put_RunLevel失败");
+
+
+    hr = p_folder->RegisterTaskDefinition(
+        _bstr_t(task_name.c_str()),
+        p_task_def.Get(),
+        TASK_CREATE_OR_UPDATE,
+        _variant_t(username_domain.c_str()),
+        _variant_t(),
+        TASK_LOGON_INTERACTIVE_TOKEN,
+        _variant_t(),
+        p_reg_task.AsOutPtr()
+    );
+    DownIfErr(hr, L"RegisterTaskDefinition失败");
 
 DOWN:
 
-    CoUninitialize();
+
+    return SUCCEEDED(hr);
 }
