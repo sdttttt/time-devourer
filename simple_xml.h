@@ -2,9 +2,6 @@
 // Created by kms on 2025/9/11.
 //
 
-#include <fstream>
-#include <sstream>
-
 using std::wstring;
 
 class CSimpleXML

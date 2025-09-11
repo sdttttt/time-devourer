@@ -1,4 +1,4 @@
-#include "common.h"
+
 #include <gdiplus.h>
 #include <array>
 #include "gdi_obj.h"

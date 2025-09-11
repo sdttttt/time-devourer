@@ -1,5 +1,4 @@
-#include "common.h"
-#include <tchar.h>
+
 #include "font.h"
 #include "gdi_obj.h"
 

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "common.h"
 
 constexpr auto FONT_FAMILY = L"Arial";
 

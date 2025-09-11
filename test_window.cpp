@@ -1,7 +1,8 @@
-#include "resource.h"
-#include "common.h"
+
 #include "digital_font.h"
 #include "date.h"
+#include "resource.h"
+#include "common.h"
 
 // 设置窗口类
 constexpr auto TEST_CLASS_NAME = L"TestWindowClass";

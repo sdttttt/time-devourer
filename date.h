@@ -1,6 +1,5 @@
 #pragma once
-#include "common.h"
-#include "chrono"
+#include <chrono>
 
 namespace Date {
     constexpr auto TIME_FORMAT = L"%H:%M:%S";

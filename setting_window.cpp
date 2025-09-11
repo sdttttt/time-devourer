@@ -1,5 +1,6 @@
 #include "common.h"
 #include "setting_window.h"
+#include "resource.h"
 
 static LRESULT CALLBACK settingWndProc(
     _In_ HWND hWnd,

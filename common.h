@@ -1,6 +1,5 @@
 #pragma once
 
-#include "resource.h"
 
 // 计划任务的任务路径
 constexpr auto TASK_SCHED_ROOT = L"\\";

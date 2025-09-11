@@ -4,6 +4,10 @@
 
 #include "simple_xml.h"
 
+#include <fstream>
+#include <sstream>
+
+
 BOOL HasUtf8Bom(const std::string_view str)
 {
     return str.size() >= 3 &&
@@ -19,7 +23,7 @@ std::wstring UTF82UTF16(const std::string& str)
         return L"";
     }
 
-    auto size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), str.size(), nullptr, 0);
+    size_t size_needed = MultiByteToWideChar(CP_UTF8, 0, str.data(), str.size(), nullptr, 0);
 
     if (size_needed <= 0)
     {

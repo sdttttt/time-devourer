@@ -2,12 +2,13 @@
 #include "time_window.h"
 #include "task_sched.h"
 #include "date.h"
-#include "resource.h"
 #include "setting_window.h"
 #include "test_window.h"
 #include "gdi_obj.h"
 #include "digital_font.h"
-
+#include "tray.h"
+#include "resource.h"
+#include "common.h"
 
 using namespace std::chrono;
 

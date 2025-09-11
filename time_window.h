@@ -1,8 +1,6 @@
 #pragma once
 
 #include <chrono>
-#include "common.h"
-#include "tray.h"
 
 
 // 时间显示窗口类

@@ -1,5 +1,8 @@
 #include <windows.h>
 
+
+#include "task_sched.h"
+#include "resource.h"
 #include "tray.h"
 
 namespace Tray
