@@ -351,7 +351,7 @@ namespace TaskSched
                 CSimpleXML xml;
                 xml.LoadXMLContentDirect(std::wstring(xml_buff));
                 // 获得配置中的执行路径
-                const std::wstring command_path = xml.GetNode(L"Command", L"Exec");
+                std::wstring command_path = xml.GetNode(L"Command", L"Exec");
                 if (path != nullptr)
                 {
                     *path = command_path;
@@ -360,7 +360,13 @@ namespace TaskSched
                 std::wstring exec_path;
                 exec_path.resize(MAX_PATH);
                 GetModuleFileName(NULL, exec_path.data(), MAX_PATH);
+
+                // 利用const wchat *的构造方法字符串截断'\0'
+                command_path = std::wstring(command_path.c_str());
+                exec_path = std::wstring(exec_path.c_str());
+
                 command_path_match = (command_path == exec_path);
+
                 SysFreeString(xml_buff);
                 if (SUCCEEDED(hr))
                 {
