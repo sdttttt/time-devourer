@@ -106,7 +106,7 @@ static LRESULT CALLBACK timeWndProc(
             WindowDisplay g_window_display;
             // 计步器
             StepCountDown g_step_down(Date::NextHourDistance());
-            struct TimeWindowData g_time_window  ={
+            TimeWindowData g_time_window = {
                 g_window_pos,
                 g_window_display,
                 g_step_down

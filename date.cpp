@@ -40,6 +40,7 @@ namespace Date {
     }
 
 #ifdef _DEBUG
+    // 调试模式下强制锁在2分钟后提醒
     std::chrono::seconds NextHourDistance() {
         struct tm tm = currTM();
 
@@ -67,7 +68,7 @@ namespace Date {
 
         const auto next_hour = std::chrono::system_clock::from_time_t(mktime(&tm));
 
-        return std::chrono::duration_cast< std::chrono::seconds >( next_hour - now );
+        return std::chrono::duration_cast<std::chrono::seconds>(next_hour - now);
     }
 #endif
 }
