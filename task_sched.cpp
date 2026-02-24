@@ -244,10 +244,9 @@ namespace TaskSched
         hr = p_principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
         TryStep(hr, L"获取Principal LogonType失败");
 
-        // 最低权限运行
-        hr = p_principal->put_RunLevel(_TASK_RUNLEVEL::TASK_RUNLEVEL_LUA);
+        // 最高权限运行
+        hr = p_principal->put_RunLevel(_TASK_RUNLEVEL::TASK_RUNLEVEL_HIGHEST);
         TryStep(hr, L"put_RunLevel失败");
-
 
         hr = p_folder->RegisterTaskDefinition(
             CComBSTR(task_name.c_str()),
