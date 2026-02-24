@@ -1,5 +1,8 @@
 
 #include "time_window.h"
+
+#include <memory>
+
 #include "task_sched.h"
 #include "date.h"
 #include "setting_window.h"
@@ -25,6 +28,12 @@ struct WindowDisplay
     BOOL fading = FALSE; // 窗口动画标识, 为TRUE时窗口正在进行(消失|进入)动画
 };
 
+struct TimeWindowData
+{
+    WindowPos pos;
+    WindowDisplay display;
+    StepCountDown step_down;
+};
 
 static void Exit(const HWND hwnd)
 {
@@ -87,24 +96,34 @@ static LRESULT CALLBACK timeWndProc(
     PAINTSTRUCT ps;
     HDC hdc;
 
-    // 窗口位置状态
-    static WindowPos g_window_pos;
-    // 窗口显示状态
-    static WindowDisplay g_window_display;
-
-    // 计步器
-    static StepCountDown g_step_down(Date::NextHourDistance());
-
     switch (message)
     {
     case WM_CREATE:
         {
+            // 窗口位置状态
+            WindowPos g_window_pos;
+            // 窗口显示状态
+            WindowDisplay g_window_display;
+            // 计步器
+            StepCountDown g_step_down(Date::NextHourDistance());
+            struct TimeWindowData g_time_window  ={
+                g_window_pos,
+                g_window_display,
+                g_step_down
+            };
+
+            auto data = std::make_unique<TimeWindowData>(g_time_window);
+            SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data.release()));
+
             Tray::AddIcon(hWnd);
             break;
         }
 
     case Tray::WM_ICON:
         {
+            auto data = reinterpret_cast<TimeWindowData*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+            auto& display = data->display;
+
             if (lParam == WM_RBUTTONUP)
             {
                 Tray::ShowMenu(hWnd);
@@ -112,30 +131,34 @@ static LRESULT CALLBACK timeWndProc(
 
             if (lParam == WM_LBUTTONUP)
             {
-                g_window_display.alpha = 255;
-                timerWindowFadeOut(hWnd, g_window_display);
+                display.alpha = 255;
+                timerWindowFadeOut(hWnd, display);
             }
             break;
         }
 
     case WM_TIMER:
         {
+            auto data = reinterpret_cast<TimeWindowData*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+            auto& display = data->display;
+            auto& step_down = data->step_down;
+
             if (wParam == DATE_TIMER_ID)
             {
-                g_step_down.step();
+                step_down.step();
 
                 // 如果距离已经在提醒半径内且提醒未激活：则可以开始提醒
-                if (g_step_down.distance() <= WINDOWS_SHOW_TIME_RADIUS_SEC && FALSE == g_window_display.is_show)
+                if (step_down.distance() <= WINDOWS_SHOW_TIME_RADIUS_SEC && FALSE == display.is_show)
                 {
-                    timerWindowFadeIn(hWnd, g_window_display);
+                    timerWindowFadeIn(hWnd, display);
                 }
 
                 // 如果提醒激活，且距离已经超出提醒半径：则停止提醒，重置距离计算
-                if (g_step_down.distance() > WINDOWS_SHOW_TIME_RADIUS_SEC && g_window_display.is_show)
+                if (step_down.distance() > WINDOWS_SHOW_TIME_RADIUS_SEC && display.is_show)
                 {
-                    timerWindowFadeOut(hWnd, g_window_display);
+                    timerWindowFadeOut(hWnd, display);
                     // 重新计算下一次时间
-                    g_step_down.reset(Date::NextHourDistance());
+                    step_down.reset(Date::NextHourDistance());
                 }
 
                 InvalidateRect(hWnd, nullptr, TRUE);
@@ -143,7 +166,7 @@ static LRESULT CALLBACK timeWndProc(
 
             if (wParam == ANIMATION_TIMER_ID)
             {
-                updateTimerWindowFadeAnimation(hWnd, g_window_display);
+                updateTimerWindowFadeAnimation(hWnd, display);
             }
             break;
         }
@@ -151,6 +174,9 @@ static LRESULT CALLBACK timeWndProc(
     // 鼠标按下
     case WM_LBUTTONDOWN:
         {
+            auto data = reinterpret_cast<TimeWindowData*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+            auto& pos = data->pos;
+
             // 鼠标位置
             POINT pt = {LOWORD(lParam), HIWORD(lParam)};
 
@@ -162,8 +188,8 @@ static LRESULT CALLBACK timeWndProc(
             // 检查鼠标位置是否在窗口矩形内
             if (PtInRect(&area_rect, pt))
             {
-                g_window_pos.drag_start = pt;
-                g_window_pos.is_dragging = TRUE;
+                pos.drag_start = pt;
+                pos.is_dragging = TRUE;
 
                 // 设置鼠标捕获以及修改鼠标样式
                 SetCapture(hWnd);
@@ -175,9 +201,12 @@ static LRESULT CALLBACK timeWndProc(
 
     case WM_LBUTTONUP:
         {
-            if (g_window_pos.is_dragging)
+            auto data = reinterpret_cast<TimeWindowData*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+            auto& pos = data->pos;
+
+            if (pos.is_dragging)
             {
-                g_window_pos.is_dragging = FALSE;
+                pos.is_dragging = FALSE;
                 ReleaseCapture();
             }
 
@@ -186,7 +215,10 @@ static LRESULT CALLBACK timeWndProc(
 
     case WM_MOUSEMOVE:
         {
-            if (g_window_pos.is_dragging)
+            auto data = reinterpret_cast<TimeWindowData*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+            auto& pos = data->pos;
+
+            if (pos.is_dragging)
             {
                 POINT pt;
                 GetCursorPos(&pt);
@@ -194,8 +226,8 @@ static LRESULT CALLBACK timeWndProc(
                 RECT rect;
                 GetWindowRect(hWnd, &rect);
 
-                int new_x = rect.left + (pt.x - (rect.left + g_window_pos.drag_start.x));
-                int new_y = rect.top + (pt.y - (rect.top + g_window_pos.drag_start.y));
+                int new_x = rect.left + (pt.x - (rect.left + pos.drag_start.x));
+                int new_y = rect.top + (pt.y - (rect.top + pos.drag_start.y));
 
                 // 移动窗口
                 SetWindowPos(hWnd, NULL, new_x, new_y, 0, 0,

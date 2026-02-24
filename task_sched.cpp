@@ -274,7 +274,6 @@ namespace TaskSched
         COMPtr<ITaskService> p_service(nullptr);
         COMPtr<ITaskFolder> p_task_folder(nullptr);
 
-
         TryStep(com_scope.init(), L"COM组件:初始化错误");
 
         TryStep(CoCreateInstance(
