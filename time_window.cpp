@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "task_sched.h"
 #include "date.h"
 #include "setting_window.h"
 #include "test_window.h"
@@ -255,16 +254,6 @@ static LRESULT CALLBACK timeWndProc(
 
             case Tray::TRAY_MENU_STARTUP:
                 {
-                    std::wstring current_exec_path;
-                    const auto is_active_startup = TaskSched::IsActiveStartupTask(&current_exec_path);
-
-                    if (is_active_startup)
-                    {
-                        TaskSched::DeleteStartupTask();
-                    } else
-                    {
-                        TaskSched::CreateStartupTask();
-                    }
                     break;
                 }
 

@@ -9,7 +9,7 @@ namespace Font {
             int font_size_height = rect.bottom - rect.top;
             int font_size_width = rect.right - rect.left;
 
-            int new_font_size = min(font_size_height, font_size_width);
+            int new_font_size = std::min(font_size_height, font_size_width);
 
             return CreateFont(
                 new_font_size, // 高度（负值表示字符高度）

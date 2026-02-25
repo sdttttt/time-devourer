@@ -9,10 +9,6 @@ int WINAPI WinMain(
     _In_ LPSTR lpCmdLine,
     _In_ int nCmdShow
 ) {
-    if (IsWindows10OrGreater()) {
-        SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-    }
-
     const auto ret = CreateTimeClassAndWindow(hInstance, nCmdShow);
     if (ret > 0) {
         return ret;
