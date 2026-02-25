@@ -5,9 +5,10 @@
  - UI错误
  - 进程装死
 
-### 兼容性
+### 工具链
 
-只用了`Win32API`和GDI, 理论上可以在`Windows 2000`上运行。
+- MinGW
+- CMake
 
 ### Shotsnap
 <img width="513" height="184" alt="圖片" src="https://github.com/user-attachments/assets/cb252d64-d6b8-45e0-9171-055de8e261a9" />
