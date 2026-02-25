@@ -21,12 +21,11 @@ static LRESULT CALLBACK testWndProc(
     _In_ LPARAM lParam
 ) {
     PAINTSTRUCT ps;
-    HDC hdc;
 
     switch (message) {
         case WM_PAINT: {
-            hdc = BeginPaint(hWnd, &ps);
-            auto time = Date::CurrTimeWStr();
+            HDC hdc = BeginPaint(hWnd, &ps);
+            const auto time = Date::CurrTimeWStr();
             DigitalFont::DrawClock(hdc, time);
 
             EndPaint(hWnd, &ps);
